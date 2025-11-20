@@ -1,7 +1,5 @@
 # Journal de bord – Nichoir connecté
 
-## Séance du JJ/MM/AAAA
-
 ## Séance du 20/11/2025
 
 - Objectifs :
