@@ -1,23 +1,19 @@
 #include "WifiClientSTA.h"
 #include "EspCamera.h"
-
+#include "MQTT.h"
 
 WifiClientSTA wifiClient("Al-zubaidi Mohammed", "12345678");
 EspCamera esp;
-
-
+MQTT mqtt("raspberrypiMohammedalzubaidi.local");  
 
 void setup() {
-  Serial.begin(115200);
-  wifiClient.begin();
-  esp.begin();
+  Serial.begin(115200); 
+  wifiClient.begin();    
+  esp.begin();      
 }
 
 void loop() {
-  // ton code après connexion (HTTP, MQTT, etc.)
+  mqtt.sendImage(esp.TakePicture());
 
-  esp.GetBatteryLevel();
-  delay (1000);
-
-
+  delay (5000);
 }

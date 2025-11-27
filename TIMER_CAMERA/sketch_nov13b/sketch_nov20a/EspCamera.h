@@ -1,4 +1,6 @@
 #include "M5TimerCAM.h"
+#include "base64.h"  // Assurez-vous d'avoir la bibliothèque base64.h pour l'encodage Base64
+
 
 class EspCamera {
 public:
@@ -48,16 +50,29 @@ public:
     s->set_hmirror(s, 1);  // on active le miroir horizontal
     Serial.println("Mode : miroir horizontal");
   }
-  void TakePicture() {
+  String TakePicture() {
     if (TimerCAM.Camera.get()) {
       Serial.printf("Taille photo : %d octets\n", TimerCAM.Camera.fb->len);
+
+      // Encoder l'image capturée en base64
+      String base64Image = base64::encode(TimerCAM.Camera.fb->buf, TimerCAM.Camera.fb->len);  // Encode l'image en base64
+
+      // Libérer la mémoire utilisée par l'image après l'encodage
       TimerCAM.Camera.free();
+
+      // Retourner l'image encodée en base64
+      return base64Image;
     } else {
       Serial.println("Capture ratée");
     }
+
+    return "";
   }
-  void GetBatteryLevel() {
+  int GetBatteryLevel() {
+    int battery = TimerCAM.Power.getBatteryLevel();
     Serial.printf("Bat Voltage: %dmv\r\n", TimerCAM.Power.getBatteryVoltage());
     Serial.printf("Bat Level: %d%%\r\n", TimerCAM.Power.getBatteryLevel());
+
+    return battery;
   }
 };
