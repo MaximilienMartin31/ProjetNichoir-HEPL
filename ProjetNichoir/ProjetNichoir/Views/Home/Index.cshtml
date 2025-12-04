@@ -1,0 +1,351 @@
+﻿@{
+    ViewData["Title"] = "Accueil";
+}
+
+<script>
+// -------------------------
+// Drawer Nichoir
+// -------------------------
+function openFormNichoir() {
+    const drawer = document.getElementById("drawer-nichoir");
+    drawer.classList.add("drawer-open");
+    document.body.classList.add("no-scroll");
+}
+
+function closeFormNichoir() {
+    const drawer = document.getElementById("drawer-nichoir");
+    drawer.classList.remove("drawer-open");
+    document.body.classList.remove("no-scroll");
+}
+
+// -------------------------
+// Drawer Album
+// -------------------------
+function openFormAlbum() {
+    const drawer = document.getElementById("drawer-album");
+    drawer.classList.add("drawer-open");
+    document.body.classList.add("no-scroll");
+}
+
+function closeFormAlbum() {
+    const drawer = document.getElementById("drawer-album");
+    drawer.classList.remove("drawer-open");
+    document.body.classList.remove("no-scroll");
+}
+
+// -------------------------
+// Fermer en cliquant dehors
+// -------------------------
+document.addEventListener("DOMContentLoaded", () => {
+    const drawerNichoir = document.getElementById("drawer-nichoir");
+    const drawerAlbum = document.getElementById("drawer-album");
+
+    if (drawerNichoir) {
+        drawerNichoir.addEventListener("click", (e) => {
+            if (e.target === drawerNichoir) closeFormNichoir();
+        });
+    }
+
+    if (drawerAlbum) {
+        drawerAlbum.addEventListener("click", (e) => {
+            if (e.target === drawerAlbum) closeFormAlbum();
+        });
+    }
+});
+</script>
+
+
+
+
+
+
+
+<div class="container mt-5">
+
+    <!-- SECTION NICHoirs -->
+    <h2 class="text-center mb-4">Nichoirs connectés</h2>
+
+    <div class="nichoir-grid">
+
+        <!-- Exemple (à remplacer par une boucle plus tard) -->
+        <div class="nichoir-card">
+            <span>Nichoir 1</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Nichoir 2</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Nichoir 3</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Nichoir 4</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Nichoir 5</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Nichoir 6</span>
+        </div>
+
+        <!-- Ajout -->
+        <div class="nichoir-card add-card" onclick="openFormNichoir()">
+            <span class="plus">+</span>
+        </div>
+
+
+    </div>
+
+
+
+    <!-- SEPARATEUR -->
+    <hr class="section-separator" />
+
+
+    <!-- SECTION ALBUMS / FAVORIS -->
+    <h2 class="text-center mb-4">Albums</h2>
+
+    <div class="nichoir-grid">
+
+        <!-- Exemples -->
+        <div class="nichoir-card">
+            <span>Album 1</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Album 2</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Album 3</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Album 4</span>
+        </div>
+
+        <div class="nichoir-card">
+            <span>Favoris</span>
+        </div>
+
+        <div class="nichoir-card add-card" onclick="openFormAlbum()">
+            <span class="plus">+</span>
+        </div>
+    </div>
+</div>
+
+    <!-- SEPARATEUR -->
+<hr class="section-separator" />
+
+<h2 class="text-center mb-4">Favoris</h2>
+
+<div class="nichoir-grid">
+    <div class="nichoir-card">
+        <span>Favoris</span>
+    </div>
+</div>
+
+<!-- PANNEAU LATERAL AJOUT NICHoir -->
+
+<!-- PANNEAU LATERAL AJOUT NICHoir -->
+<div id="drawer-nichoir" class="drawer-overlay">
+    <div class="drawer-panel">
+
+        <h2>Ajouter un nichoir</h2>
+
+        <form class="nichoir-form">
+
+            <label>Nom du nichoir</label>
+            <input type="text" required placeholder="Ex : Nichoir Jardin">
+
+            <label>Emplacement</label>
+            <input type="text" required placeholder="Ex : Arbre du fond du jardin">
+
+            <label>Description</label>
+            <textarea rows="3" placeholder="Quelques mots sur ce nichoir..."></textarea>
+
+            <div class="drawer-buttons">
+                <button type="button" class="btn-cancel" onclick="closeFormNichoir()">Annuler</button>
+                <button type="submit" class="btn-confirm">Confirmer</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+<!-- PANNEAU LATERAL AJOUT ALBUM -->
+<div id="drawer-album" class="drawer-overlay">
+    <div class="drawer-panel">
+
+        <h2>Créer un album</h2>
+
+        <form class="nichoir-form">
+
+            <label>Nom de l'album</label>
+            <input type="text" required placeholder="Ex : Vacances oiseaux">
+
+            <div class="drawer-buttons">
+                <button type="button" class="btn-cancel" onclick="closeFormAlbum()">Annuler</button>
+                <button type="submit" class="btn-confirm">Créer</button>
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+
+<style>
+
+    /* Grille responsive */
+    .nichoir-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+        margin-bottom: 60px;
+    }
+
+    /* Style global des cartes */
+    .nichoir-card {
+        height: 150px;
+        border-radius: 15px;
+        background: #e9f0ff; /* Bleu cohérent pour tout */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        text-align: center;
+        padding: 10px;
+        color: #2d2d2d;
+    }
+
+    .nichoir-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        background: #cbdcff; /* Slightly darker blue on hover */
+    }
+
+    /* Carte Ajouter */
+    .add-card {
+        background: #ffffff !important;
+        border: 3px dashed #6c63ff;
+        color: #6c63ff;
+    }
+
+    .add-card .plus {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .add-card:hover {
+        background: #6c63ff !important;
+        color: white !important;
+        border-color: transparent;
+    }
+
+    /* Separator */
+    .section-separator {
+        margin: 60px auto;
+        width: 60%;
+        border: 0;
+        border-top: 2px solid #d0d0d0;
+    }
+
+    /* --- Drawer Overlay --- */
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 100%;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(3px);
+        overflow: hidden;
+        transition: width 0.3s ease;
+        z-index: 2000;
+    }
+
+    /* --- Drawer Panel --- */
+    .drawer-panel {
+        position: absolute;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100%;
+        background: #ffffff;
+        box-shadow: -3px 0 10px rgba(0,0,0,0.2);
+        padding: 25px;
+        border-radius: 25px 0 0 25px;
+        transition: right 0.3s ease;
+    }
+
+    /* --- Formulaire --- */
+    .nichoir-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .nichoir-form input,
+    .nichoir-form select,
+    .nichoir-form textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #c7c7c7;
+        font-size: 1rem;
+    }
+
+    /* Boutons */
+    .drawer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        border-radius: 10px;
+        background: #cccccc;
+        border: none;
+        font-size: 1rem;
+    }
+
+    .btn-confirm {
+        padding: 10px 20px;
+        border-radius: 10px;
+        background: #6c63ff;
+        color: white;
+        border: none;
+        font-size: 1rem;
+    }
+
+    .btn-cancel:hover { background: #b6b6b6; }
+    .btn-confirm:hover { background: #5a56e0; }
+
+    /* Animation drawer actif */
+    .drawer-open {
+        width: 100%;
+    }
+    .drawer-open .drawer-panel {
+        right: 0;
+    }
+
+    .no-scroll {
+    overflow: hidden;
+    height: 100vh;
+    }
+
+
+</style>

@@ -86,7 +86,7 @@
 
 - **Prochaines étapes** :
   - **T8** : Sauvegarde de l’image et **insert en DB** côté Raspberry Pi.
-  - Démarrage de la page **Flask d’accueil** (T9).
+  - Démarrage du site web (T9).
   - Finaliser la partie **Deep Sleep** et **réveil PIR/timer** (T10).
 
 ---
@@ -96,15 +96,14 @@
 - **Objectifs** :
   - Finaliser l’envoi d’images + JSON côté ESP32.
   - Sauvegarde dans la base de données côté Raspberry Pi.
-  - Créer la page **Flask d’accueil** (T9).
+  - Modification de la base de données.
+  - Créer le site web (T9).
 
 - **Tâches réalisées** :
-  - Finalisation de **T7** : Envoi d’**image + JSON** côté ESP32 (fonctionne en test).
-  - **T8** : Sauvegarde de l’image et **insert dans MariaDB** côté Raspberry Pi.
-  - Début de la création de la page **Flask d’accueil** (T9).
+  - Modification de la base de données (rajout de tables).
+  - Début de la création du site web (T9).
 
 - **Problèmes rencontrés** :
-  - Problème de **format d’image** pour l’envoi via MQTT (en base64).
   - Sauvegarde d’image dans MariaDB nécessite l’ajout d’une colonne pour stocker le chemin de l’image.
 
 - **Décisions prises** :
@@ -113,5 +112,33 @@
 
 - **Prochaines étapes** :
   - Finaliser la **page Flask d’accueil** (T9).
+  - Tester le **réveil PIR** et les **cycle Deep Sleep** pour l’optimisation batterie (T10).
+  - Ajouter les **tests d’autonomie** pour la batterie (T11).
+  - Création AP.
+
+---
+
+## Séance du 04/12/2025
+
+- **Objectifs** :
+  - Finaliser l’envoi d’images + JSON côté ESP32.
+  - Sauvegarde dans la base de données côté Raspberry Pi.
+  - Créer la page **Flask d’accueil** (T9).
+  - Création AP.
+
+- **Tâches réalisées** :
+  - Finalisation de **T7** : Envoi d’**image + JSON** côté ESP32 (fonctionne en test).
+  - **T8** : Sauvegarde de l’image et **insert dans MariaDB** côté Raspberry Pi.
+  - Début de la création de la page **Flask d’accueil** (T9).
+
+- **Problèmes rencontrés** :
+  - Point d'accès ne fonctionne pas.
+
+- **Décisions prises** :
+  - /
+
+- **Prochaines étapes** :
+  - Finaliser le site web (T9).
+  - Finir AP.
   - Tester le **réveil PIR** et les **cycle Deep Sleep** pour l’optimisation batterie (T10).
   - Ajouter les **tests d’autonomie** pour la batterie (T11).
