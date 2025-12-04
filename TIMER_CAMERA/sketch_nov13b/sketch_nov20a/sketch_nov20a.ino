@@ -1,19 +1,30 @@
-#include "WifiClientSTA.h"
+#include "WifiESP.h"
 #include "EspCamera.h"
 #include "MQTT.h"
 
-WifiClientSTA wifiClient("Al-zubaidi Mohammed", "12345678");
+WifiESP wifi;
 EspCamera esp;
-MQTT mqtt("raspberrypiMohammedalzubaidi.local");  
+MQTT mqtt("raspberrypiMohammedalzubaidi.local");
 
 void setup() {
-  Serial.begin(115200); 
-  wifiClient.begin();    
-  esp.begin();      
+  Serial.begin(115200);
+  wifi.beginAP();
+  esp.begin();
 }
 
 void loop() {
-  mqtt.sendImage(esp.TakePicture());
 
-  delay (5000);
+ // Serial.print("debut veille");
+  wifi.handleClient();
+ // esp_sleep_enable_ext0_wakeup(GPIO_NUM_14, 0);  // LOW = réveil
+
+ // esp_deep_sleep_start();
+ // Serial.print("fin veille");
+
+
+
+  if (WiFi.status() == WL_CONNECTED) {
+
+    
+  }
 }

@@ -12,7 +12,7 @@ private:
   const int mqtt_port = 1883;
 
 public:
-  MQTT(const char* server_address, const char* imageTopic = "ProjetNichoir/image") {
+  MQTT(const char* server_address) {
     mqtt_server = server_address;
     imageTopic = imageTopic;
     client.setServer(mqtt_server, mqtt_port);

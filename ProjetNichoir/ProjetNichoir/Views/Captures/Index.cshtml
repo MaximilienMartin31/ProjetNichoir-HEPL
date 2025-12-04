@@ -1,0 +1,65 @@
+﻿@model IEnumerable<ProjetNichoir.Models.Capture>
+
+@{
+    ViewData["Title"] = "Index";
+}
+
+<h1>Index</h1>
+
+<p>
+    <a asp-action="Create">Create New</a>
+</p>
+<table class="table">
+    <thead>
+        <tr>
+            <th>
+                @Html.DisplayNameFor(model => model.nichoir)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.chemin_image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.date_capture)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.taille_image)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.batterie)
+            </th>
+            <th>
+                @Html.DisplayNameFor(model => model.resolution)
+            </th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+@foreach (var item in Model) {
+        <tr>
+            <td>
+                @Html.DisplayFor(modelItem => item.nichoir.nom)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.chemin_image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.date_capture)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.taille_image)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.batterie)
+            </td>
+            <td>
+                @Html.DisplayFor(modelItem => item.resolution)
+            </td>
+            <td>
+                <a asp-action="Edit" asp-route-id="@item.id_capture">Edit</a> |
+                <a asp-action="Details" asp-route-id="@item.id_capture">Details</a> |
+                <a asp-action="Delete" asp-route-id="@item.id_capture">Delete</a>
+            </td>
+        </tr>
+}
+    </tbody>
+</table>

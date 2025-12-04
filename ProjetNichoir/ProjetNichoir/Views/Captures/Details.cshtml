@@ -1,0 +1,54 @@
+﻿@model ProjetNichoir.Models.Capture
+
+@{
+    ViewData["Title"] = "Details";
+}
+
+<h1>Details</h1>
+
+<div>
+    <h4>Capture</h4>
+    <hr />
+    <dl class="row">
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.nichoir)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.nichoir.nom)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.chemin_image)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.chemin_image)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.date_capture)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.date_capture)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.taille_image)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.taille_image)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.batterie)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.batterie)
+        </dd>
+        <dt class = "col-sm-2">
+            @Html.DisplayNameFor(model => model.resolution)
+        </dt>
+        <dd class = "col-sm-10">
+            @Html.DisplayFor(model => model.resolution)
+        </dd>
+    </dl>
+</div>
+<div>
+    <a asp-action="Edit" asp-route-id="@Model?.id_capture">Edit</a> |
+    <a asp-action="Index">Back to List</a>
+</div>

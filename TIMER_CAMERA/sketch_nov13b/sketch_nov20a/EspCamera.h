@@ -16,8 +16,11 @@ public:
     Serial.println("Camera Init Success");
 
     // On dit à la caméra qu'on veut des images en JPEG
+
     sensor_t* s = TimerCAM.Camera.sensor;
     s->set_pixformat(s, PIXFORMAT_JPEG);
+
+    set2MP();
   }
 
 
