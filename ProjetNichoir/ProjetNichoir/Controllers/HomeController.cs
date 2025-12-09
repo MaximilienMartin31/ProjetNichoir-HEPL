@@ -46,6 +46,11 @@ namespace ProjetNichoir.Controllers
             return View();
         }
 
+        public IActionResult Phototheque()
+        {
+            return View();
+        }
+
         public IActionResult Privacy()
         {
             return View();

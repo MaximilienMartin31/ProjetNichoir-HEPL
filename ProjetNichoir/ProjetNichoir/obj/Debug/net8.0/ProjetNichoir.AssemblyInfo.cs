@@ -13,7 +13,7 @@ using System.Reflection;
 [assembly: System.Reflection.AssemblyCompanyAttribute("ProjetNichoir")]
 [assembly: System.Reflection.AssemblyConfigurationAttribute("Debug")]
 [assembly: System.Reflection.AssemblyFileVersionAttribute("1.0.0.0")]
-[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+97cc738b097f9cf1c6a6c05b0c0de39cdd4e69de")]
+[assembly: System.Reflection.AssemblyInformationalVersionAttribute("1.0.0+71f672d2830d18d846b3dc57d84123951104c028")]
 [assembly: System.Reflection.AssemblyProductAttribute("ProjetNichoir")]
 [assembly: System.Reflection.AssemblyTitleAttribute("ProjetNichoir")]
 [assembly: System.Reflection.AssemblyVersionAttribute("1.0.0.0")]

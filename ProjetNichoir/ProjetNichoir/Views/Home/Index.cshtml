@@ -4,21 +4,6 @@
 
 <script>
 // -------------------------
-// Drawer Nichoir
-// -------------------------
-function openFormNichoir() {
-    const drawer = document.getElementById("drawer-nichoir");
-    drawer.classList.add("drawer-open");
-    document.body.classList.add("no-scroll");
-}
-
-function closeFormNichoir() {
-    const drawer = document.getElementById("drawer-nichoir");
-    drawer.classList.remove("drawer-open");
-    document.body.classList.remove("no-scroll");
-}
-
-// -------------------------
 // Drawer Album
 // -------------------------
 function openFormAlbum() {
@@ -34,147 +19,154 @@ function closeFormAlbum() {
 }
 
 // -------------------------
+// Drawer Edit Album
+// -------------------------
+function openEditDrawer(albumName) {
+    const drawerEdit = document.getElementById("drawer-edit");
+    drawerEdit.classList.add("drawer-open");
+    document.body.classList.add("no-scroll");
+    document.getElementById("edit-album-name").value = albumName; // Pre-fill input with album name
+}
+
+function closeEditDrawer() {
+    const drawerEdit = document.getElementById("drawer-edit");
+    drawerEdit.classList.remove("drawer-open");
+    document.body.classList.remove("no-scroll");
+}
+
+// -------------------------
+// Modal Delete Confirmation
+// -------------------------
+function openDeleteModal(albumName) {
+    document.getElementById("delete-modal").classList.add("modal-open");
+    document.getElementById("delete-album-name").innerText = albumName;
+}
+
+function closeDeleteModal() {
+    document.getElementById("delete-modal").classList.remove("modal-open");
+}
+
+// -------------------------
 // Fermer en cliquant dehors
 // -------------------------
 document.addEventListener("DOMContentLoaded", () => {
-    const drawerNichoir = document.getElementById("drawer-nichoir");
+    // Fermeture du drawer Album
     const drawerAlbum = document.getElementById("drawer-album");
-
-    if (drawerNichoir) {
-        drawerNichoir.addEventListener("click", (e) => {
-            if (e.target === drawerNichoir) closeFormNichoir();
-        });
-    }
-
     if (drawerAlbum) {
         drawerAlbum.addEventListener("click", (e) => {
             if (e.target === drawerAlbum) closeFormAlbum();
         });
     }
+
+    // Fermeture du drawer Edit
+    const drawerEdit = document.getElementById("drawer-edit");
+    if (drawerEdit) {
+        drawerEdit.addEventListener("click", (e) => {
+            if (e.target === drawerEdit) closeEditDrawer();
+        });
+    }
 });
 </script>
 
-
-
-
-
-
-
 <div class="container mt-5">
 
-    <!-- SECTION NICHoirs -->
-    <h2 class="text-center mb-4">Nichoirs connectés</h2>
+    <hr class="section-separator" />
+    
+    <!-- SECTION PHOTOTHÈQUE -->
+    <h2 class="text-center mb-4">Photothèque</h2>
 
-    <div class="nichoir-grid">
-
-        <!-- Exemple (à remplacer par une boucle plus tard) -->
-        <div class="nichoir-card">
-            <span>Nichoir 1</span>
+    <div class="album-grid">
+        <div class="album-card">
+            <span>Photo 1</span>
+        </div>
+        <div class="album-card">
+            <span>Photo 2</span>
+        </div>
+        <div class="album-card">
+            <span>Photo 3</span>
+        </div>
+        <div class="album-card">
+            <span>Photo 4</span>
         </div>
 
-        <div class="nichoir-card">
-            <span>Nichoir 2</span>
+        <div class="album-card see-all-card" onclick="window.location.href='@Url.Action("Phototheque", "Home")'">
+            <span>Voir toutes les photos</span>
         </div>
-
-        <div class="nichoir-card">
-            <span>Nichoir 3</span>
-        </div>
-
-        <div class="nichoir-card">
-            <span>Nichoir 4</span>
-        </div>
-
-        <div class="nichoir-card">
-            <span>Nichoir 5</span>
-        </div>
-
-        <div class="nichoir-card">
-            <span>Nichoir 6</span>
-        </div>
-
-        <!-- Ajout -->
-        <div class="nichoir-card add-card" onclick="openFormNichoir()">
-            <span class="plus">+</span>
-        </div>
-
-
     </div>
 
-
-
-    <!-- SEPARATEUR -->
     <hr class="section-separator" />
 
-
-    <!-- SECTION ALBUMS / FAVORIS -->
+    <!-- SECTION ALBUMS -->
     <h2 class="text-center mb-4">Albums</h2>
 
-    <div class="nichoir-grid">
+    <div class="album-grid">
 
-        <!-- Exemples -->
-        <div class="nichoir-card">
+        <!-- Exemple Album 1 -->
+        <div class="album-card">
             <span>Album 1</span>
+            <div class="actions">
+                <button class="edit-btn" onclick="openEditDrawer('Album 1')">
+                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                </button>
+                <button class="delete-btn" onclick="openDeleteModal('Album 1')">
+                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                </button>
+            </div>
         </div>
 
-        <div class="nichoir-card">
+        <!-- Exemple Album 2 -->
+        <div class="album-card">
             <span>Album 2</span>
+            <div class="actions">
+                <button class="edit-btn" onclick="openEditDrawer('Album 2')">
+                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                </button>
+                <button class="delete-btn" onclick="openDeleteModal('Album 2')">
+                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                </button>
+            </div>
         </div>
 
-        <div class="nichoir-card">
+        <!-- Exemple Album 3 -->
+        <div class="album-card">
             <span>Album 3</span>
+            <div class="actions">
+                <button class="edit-btn" onclick="openEditDrawer('Album 3')">
+                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                </button>
+                <button class="delete-btn" onclick="openDeleteModal('Album 3')">
+                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                </button>
+            </div>
         </div>
 
-        <div class="nichoir-card">
+        <!-- Exemple Album 4 -->
+        <div class="album-card">
             <span>Album 4</span>
+            <div class="actions">
+                <button class="edit-btn" onclick="openEditDrawer('Album 4')">
+                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                </button>
+                <button class="delete-btn" onclick="openDeleteModal('Album 4')">
+                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                </button>
+            </div>
         </div>
 
-        <div class="nichoir-card">
-            <span>Favoris</span>
-        </div>
-
-        <div class="nichoir-card add-card" onclick="openFormAlbum()">
+        <!-- Ajouter un album -->
+        <div class="album-card add-card" onclick="openFormAlbum()">
             <span class="plus">+</span>
         </div>
     </div>
-</div>
 
-    <!-- SEPARATEUR -->
-<hr class="section-separator" />
+    <hr class="section-separator" />
 
-<h2 class="text-center mb-4">Favoris</h2>
+    <h2 class="text-center mb-4">Favoris</h2>
 
-<div class="nichoir-grid">
-    <div class="nichoir-card">
-        <span>Favoris</span>
-    </div>
-</div>
-
-<!-- PANNEAU LATERAL AJOUT NICHoir -->
-
-<!-- PANNEAU LATERAL AJOUT NICHoir -->
-<div id="drawer-nichoir" class="drawer-overlay">
-    <div class="drawer-panel">
-
-        <h2>Ajouter un nichoir</h2>
-
-        <form class="nichoir-form">
-
-            <label>Nom du nichoir</label>
-            <input type="text" required placeholder="Ex : Nichoir Jardin">
-
-            <label>Emplacement</label>
-            <input type="text" required placeholder="Ex : Arbre du fond du jardin">
-
-            <label>Description</label>
-            <textarea rows="3" placeholder="Quelques mots sur ce nichoir..."></textarea>
-
-            <div class="drawer-buttons">
-                <button type="button" class="btn-cancel" onclick="closeFormNichoir()">Annuler</button>
-                <button type="submit" class="btn-confirm">Confirmer</button>
-            </div>
-
-        </form>
-
+    <div class="album-grid">
+        <div class="album-card">
+            <span>Favoris</span>
+        </div>
     </div>
 </div>
 
@@ -184,7 +176,7 @@ document.addEventListener("DOMContentLoaded", () => {
 
         <h2>Créer un album</h2>
 
-        <form class="nichoir-form">
+        <form class="album-form">
 
             <label>Nom de l'album</label>
             <input type="text" required placeholder="Ex : Vacances oiseaux">
@@ -199,12 +191,39 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 </div>
 
+<!-- Modal de confirmation pour supprimer un album -->
+<div id="delete-modal" class="modal-overlay">
+    <div class="modal-panel">
+        <h2>Êtes-vous sûr de vouloir supprimer cet album ?</h2>
+        <p id="delete-album-name"></p>
+        <div class="modal-buttons">
+            <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+            <button type="button" class="btn-confirm">Confirmer</button>
+        </div>
+    </div>
+</div>
 
+<!-- Drawer pour Edit Album -->
+<div id="drawer-edit" class="drawer-overlay">
+    <div class="drawer-panel">
+
+        <h2>Éditer un album</h2>
+
+        <form class="album-form">
+            <label>Nom de l'album</label>
+            <input id="edit-album-name" type="text" required placeholder="Nom de l'album">
+            <div class="drawer-buttons">
+                <button type="button" class="btn-cancel" onclick="closeEditDrawer()">Annuler</button>
+                <button type="submit" class="btn-confirm">Sauvegarder</button>
+            </div>
+        </form>
+
+    </div>
+</div>
 
 <style>
-
-    /* Grille responsive */
-    .nichoir-grid {
+    /* Grille responsive pour albums */
+    .album-grid {
         display: grid;
         grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
         gap: 25px;
@@ -212,8 +231,8 @@ document.addEventListener("DOMContentLoaded", () => {
         margin-bottom: 60px;
     }
 
-    /* Style global des cartes */
-    .nichoir-card {
+    /* Style global des cartes (albums) */
+    .album-card {
         height: 150px;
         border-radius: 15px;
         background: #e9f0ff; /* Bleu cohérent pour tout */
@@ -228,15 +247,52 @@ document.addEventListener("DOMContentLoaded", () => {
         text-align: center;
         padding: 10px;
         color: #2d2d2d;
+        position: relative; /* Important pour les icônes */
     }
 
-    .nichoir-card:hover {
+    .album-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         background: #cbdcff; /* Slightly darker blue on hover */
     }
 
-    /* Carte Ajouter */
+    /* Actions - Crayon et Corbeille */
+    .album-card .actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    .icon:hover {
+        transform: scale(1.3); /* Légère animation au survol */
+    }
+
+    /* Bouton Edit */
+    .edit-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Bouton Delete */
+    .delete-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Carte Ajouter un album */
     .add-card {
         background: #ffffff !important;
         border: 3px dashed #6c63ff;
@@ -291,15 +347,15 @@ document.addEventListener("DOMContentLoaded", () => {
     }
 
     /* --- Formulaire --- */
-    .nichoir-form {
+    .album-form {
         display: flex;
         flex-direction: column;
         gap: 15px;
     }
 
-    .nichoir-form input,
-    .nichoir-form select,
-    .nichoir-form textarea {
+    .album-form input,
+    .album-form select,
+    .album-form textarea {
         width: 100%;
         padding: 10px;
         border-radius: 10px;
@@ -338,14 +394,55 @@ document.addEventListener("DOMContentLoaded", () => {
     .drawer-open {
         width: 100%;
     }
+
     .drawer-open .drawer-panel {
         right: 0;
     }
 
     .no-scroll {
-    overflow: hidden;
-    height: 100vh;
+        overflow: hidden;
+        height: 100vh;
     }
 
+    /* --- Modal de confirmation delete --- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 3000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
 
+    .modal-open {
+        display: flex;
+    }
+
+    .modal-panel {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 450px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        background: #ccc;
+    }
+
+    .btn-confirm {
+        background: #6c63ff;
+        color: white;
+    }
 </style>

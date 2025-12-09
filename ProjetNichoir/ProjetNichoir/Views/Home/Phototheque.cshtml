@@ -1,0 +1,316 @@
+@{
+    ViewData["Title"] = "Photothèque";
+}
+
+<script>
+// -------------------------
+// Logic to handle the favorite heart change
+// -------------------------
+function toggleFavorite(photoId) {
+    const heartIcon = document.getElementById(`heart-${photoId}`);
+    if (heartIcon.src.includes("heart.png")) {
+        heartIcon.src = "/assets/images/icons/redHeart.png"; // Change to red heart
+    } else {
+        heartIcon.src = "/assets/images/icons/heart.png"; // Change back to regular heart
+    }
+}
+
+</script>
+
+<div class="container mt-5">
+
+    <hr class="section-separator" />
+    
+    <!-- SECTION PHOTOTHÈQUE -->
+    <h2 class="text-center mb-4">Photothèque</h2>
+
+    <div class="album-grid">
+        <!-- Exemple Photo 1 -->
+        <div class="album-card">
+            <span>Photo 1</span>
+            <div class="actions">
+                <!-- Heart icon for favorite functionality -->
+                <button class="favorite-btn" onclick="toggleFavorite('photo1')">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo1" />
+                </button>
+            </div>
+        </div>
+
+        <!-- Exemple Photo 2 -->
+        <div class="album-card">
+            <span>Photo 2</span>
+            <div class="actions">
+                <button class="favorite-btn" onclick="toggleFavorite('photo2')">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo2" />
+                </button>
+            </div>
+        </div>
+
+        <!-- Exemple Photo 3 -->
+        <div class="album-card">
+            <span>Photo 3</span>
+            <div class="actions">
+                <button class="favorite-btn" onclick="toggleFavorite('photo3')">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo3" />
+                </button>
+            </div>
+        </div>
+
+        <!-- Exemple Photo 4 -->
+        <div class="album-card">
+            <span>Photo 4</span>
+            <div class="actions">
+                <button class="favorite-btn" onclick="toggleFavorite('photo4')">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo4" />
+                </button>
+            </div>
+        </div>
+
+        <!-- Card to add a photo -->
+        <div class="album-card add-card" onclick="window.location.href='/Home/UploadPhoto'">
+            <span class="plus">+</span>
+        </div>
+    </div>
+
+    <hr class="section-separator" />
+
+</div>
+
+<style>
+    /* Grille responsive pour albums */
+    .album-grid {
+        display: grid;
+        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        gap: 25px;
+        margin-top: 30px;
+        margin-bottom: 60px;
+    }
+
+    /* Style global des cartes (albums) */
+    .album-card {
+        height: 150px;
+        border-radius: 15px;
+        background: #e9f0ff; /* Bleu cohérent pour tout */
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1.2rem;
+        font-weight: 600;
+        cursor: pointer;
+        transition: all 0.2s ease;
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15);
+        text-align: center;
+        padding: 10px;
+        color: #2d2d2d;
+        position: relative; /* Important pour les icônes */
+    }
+
+    .album-card:hover {
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+        background: #cbdcff; /* Slightly darker blue on hover */
+    }
+
+    /* Actions - Crayon et Corbeille */
+    .album-card .actions {
+        position: absolute;
+        top: 10px;
+        right: 10px;
+        display: flex;
+        flex-direction: column;
+    }
+
+    .icon {
+        width: 20px;
+        height: 20px;
+        cursor: pointer;
+        transition: transform 0.3s ease;
+    }
+
+    button img {
+        border: none;
+        outline: none;
+    }
+
+    .icon:hover {
+        transform: scale(1.3); /* Légère animation au survol */
+    }
+
+    /* Bouton Edit */
+    .edit-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Bouton Delete */
+    .delete-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    .favorite-btn {
+        background: none;
+        border: none;
+        font-size: 1.5rem;
+        cursor: pointer;
+    }
+
+    /* Carte Ajouter une photo */
+    .add-card {
+        background: #ffffff !important;
+        border: 3px dashed #6c63ff;
+        color: #6c63ff;
+    }
+
+    .add-card .plus {
+        font-size: 3rem;
+        font-weight: bold;
+    }
+
+    .add-card:hover {
+        background: #6c63ff !important;
+        color: white !important;
+        border-color: transparent;
+    }
+
+    /* Separator */
+    .section-separator {
+        margin: 60px auto;
+        width: 60%;
+        border: 0;
+        border-top: 2px solid #d0d0d0;
+    }
+
+    /* --- Drawer Overlay --- */
+    .drawer-overlay {
+        position: fixed;
+        top: 0;
+        right: 0;
+        width: 0;
+        height: 100%;
+        background: rgba(0,0,0,0.35);
+        backdrop-filter: blur(3px);
+        overflow: hidden;
+        transition: width 0.3s ease;
+        z-index: 2000;
+    }
+
+    /* --- Drawer Panel --- */
+    .drawer-panel {
+        position: absolute;
+        top: 0;
+        right: -400px;
+        width: 400px;
+        height: 100%;
+        background: #ffffff;
+        box-shadow: -3px 0 10px rgba(0,0,0,0.2);
+        padding: 25px;
+        border-radius: 25px 0 0 25px;
+        transition: right 0.3s ease;
+    }
+
+    /* --- Formulaire --- */
+    .album-form {
+        display: flex;
+        flex-direction: column;
+        gap: 15px;
+    }
+
+    .album-form input,
+    .album-form select,
+    .album-form textarea {
+        width: 100%;
+        padding: 10px;
+        border-radius: 10px;
+        border: 1px solid #c7c7c7;
+        font-size: 1rem;
+    }
+
+    /* Boutons */
+    .drawer-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        padding: 10px 20px;
+        border-radius: 10px;
+        background: #cccccc;
+        border: none;
+        font-size: 1rem;
+    }
+
+    .btn-confirm {
+        padding: 10px 20px;
+        border-radius: 10px;
+        background: #6c63ff;
+        color: white;
+        border: none;
+        font-size: 1rem;
+    }
+
+    .btn-cancel:hover { background: #b6b6b6; }
+    .btn-confirm:hover { background: #5a56e0; }
+
+    /* Animation drawer actif */
+    .drawer-open {
+        width: 100%;
+    }
+
+    .drawer-open .drawer-panel {
+        right: 0;
+    }
+
+    .no-scroll {
+        overflow: hidden;
+        height: 100vh;
+    }
+
+    /* --- Modal de confirmation delete --- */
+    .modal-overlay {
+        position: fixed;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
+        background: rgba(0, 0, 0, 0.5);
+        z-index: 3000;
+        display: none;
+        justify-content: center;
+        align-items: center;
+    }
+
+    .modal-open {
+        display: flex;
+    }
+
+    .modal-panel {
+        background: #fff;
+        padding: 30px;
+        border-radius: 10px;
+        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
+        text-align: center;
+        width: 450px;
+    }
+
+    .modal-buttons {
+        display: flex;
+        justify-content: space-between;
+        margin-top: 20px;
+    }
+
+    .btn-cancel {
+        background: #ccc;
+    }
+
+    .btn-confirm {
+        background: #6c63ff;
+        color: white;
+    }
+
+</style>

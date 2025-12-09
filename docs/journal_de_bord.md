@@ -127,9 +127,7 @@
   - Création AP.
 
 - **Tâches réalisées** :
-  - Finalisation de **T7** : Envoi d’**image + JSON** côté ESP32 (fonctionne en test).
-  - **T8** : Sauvegarde de l’image et **insert dans MariaDB** côté Raspberry Pi.
-  - Début de la création de la page **Flask d’accueil** (T9).
+  - Début de la création du site web (T9).
 
 - **Problèmes rencontrés** :
   - Point d'accès ne fonctionne pas.
@@ -142,3 +140,46 @@
   - Finir AP.
   - Tester le **réveil PIR** et les **cycle Deep Sleep** pour l’optimisation batterie (T10).
   - Ajouter les **tests d’autonomie** pour la batterie (T11).
+
+---
+
+## Séance du 09/12/2025
+
+- **Objectifs** :
+  - Finaliser l’envoi d’images + JSON côté ESP32.
+  - Sauvegarde dans la base de données côté Raspberry Pi.
+  - Créer les différentes pages web (T9).
+  - Création AP.
+
+- **Tâches réalisées** :
+  - Finalisation de **T7** : Envoi d’**image + JSON** côté ESP32 (fonctionne en test).
+  - **T8** : Sauvegarde de l’image et **insert dans MariaDB** côté Raspberry Pi.
+  - Page 1 et page 2 site web (T9).
+
+- **Problèmes rencontrés** :
+
+- **Décisions prises** :
+  - /
+
+- **Prochaines étapes** :
+  - le reste
+
+---
+
+## Séance du 11/12/2025
+
+- **Objectifs** :
+  - 
+
+
+- **Tâches réalisées** :
+  - 
+
+- **Problèmes rencontrés** :
+
+- **Décisions prises** :
+  - /
+
+- **Prochaines étapes** :
+  - le reste
+

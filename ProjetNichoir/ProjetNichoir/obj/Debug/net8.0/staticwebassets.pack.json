@@ -5,12 +5,16 @@
       "PackagePath": "staticwebassets/ProjetNichoir.bundle.scp.css"
     },
     {
-      "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/css/site.css",
-      "PackagePath": "staticwebassets/css/site.css"
+      "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/assets/images/icons/dechets.png",
+      "PackagePath": "staticwebassets/assets/images/icons/dechets.png"
     },
     {
-      "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/favicon.ico",
-      "PackagePath": "staticwebassets/favicon.ico"
+      "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/assets/images/icons/stylo.png",
+      "PackagePath": "staticwebassets/assets/images/icons/stylo.png"
+    },
+    {
+      "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/css/site.css",
+      "PackagePath": "staticwebassets/css/site.css"
     },
     {
       "Id": "/Users/max/Documents/HEPL - Passerelle - M18P1/Projet Smartcities/Projet Nichoir/ProjetNichoir/ProjetNichoir/ProjetNichoir/wwwroot/js/site.js",
