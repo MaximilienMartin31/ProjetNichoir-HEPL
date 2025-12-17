@@ -3,157 +3,165 @@
 }
 
 <script>
-// -------------------------
-// Drawer Album
-// -------------------------
-function openFormAlbum() {
-    const drawer = document.getElementById("drawer-album");
-    drawer.classList.add("drawer-open");
-    document.body.classList.add("no-scroll");
-}
-
-function closeFormAlbum() {
-    const drawer = document.getElementById("drawer-album");
-    drawer.classList.remove("drawer-open");
-    document.body.classList.remove("no-scroll");
-}
-
-// -------------------------
-// Drawer Edit Album
-// -------------------------
-function openEditDrawer(albumName) {
-    const drawerEdit = document.getElementById("drawer-edit");
-    drawerEdit.classList.add("drawer-open");
-    document.body.classList.add("no-scroll");
-    document.getElementById("edit-album-name").value = albumName; // Pre-fill input with album name
-}
-
-function closeEditDrawer() {
-    const drawerEdit = document.getElementById("drawer-edit");
-    drawerEdit.classList.remove("drawer-open");
-    document.body.classList.remove("no-scroll");
-}
-
-// -------------------------
-// Modal Delete Confirmation
-// -------------------------
-function openDeleteModal(albumName) {
-    document.getElementById("delete-modal").classList.add("modal-open");
-    document.getElementById("delete-album-name").innerText = albumName;
-}
-
-function closeDeleteModal() {
-    document.getElementById("delete-modal").classList.remove("modal-open");
-}
-
-// -------------------------
-// Fermer en cliquant dehors
-// -------------------------
-document.addEventListener("DOMContentLoaded", () => {
-    // Fermeture du drawer Album
-    const drawerAlbum = document.getElementById("drawer-album");
-    if (drawerAlbum) {
-        drawerAlbum.addEventListener("click", (e) => {
-            if (e.target === drawerAlbum) closeFormAlbum();
-        });
+    // -------------------------
+    // Drawer Album
+    // -------------------------
+    function openFormAlbum() {
+        const drawer = document.getElementById("drawer-album");
+        drawer.classList.add("drawer-open");
+        document.body.classList.add("no-scroll");
     }
 
-    // Fermeture du drawer Edit
-    const drawerEdit = document.getElementById("drawer-edit");
-    if (drawerEdit) {
-        drawerEdit.addEventListener("click", (e) => {
-            if (e.target === drawerEdit) closeEditDrawer();
-        });
+    function closeFormAlbum() {
+        const drawer = document.getElementById("drawer-album");
+        drawer.classList.remove("drawer-open");
+        document.body.classList.remove("no-scroll");
     }
-});
+
+    // -------------------------
+    // Drawer Edit Album
+    // -------------------------
+    function openEditDrawer(albumName) {
+        const drawerEdit = document.getElementById("drawer-edit");
+        drawerEdit.classList.add("drawer-open");
+        document.body.classList.add("no-scroll");
+        document.getElementById("edit-album-name").value = albumName; // Pre-fill input with album name
+    }
+
+    function closeEditDrawer() {
+        const drawerEdit = document.getElementById("drawer-edit");
+        drawerEdit.classList.remove("drawer-open");
+        document.body.classList.remove("no-scroll");
+    }
+
+    // -------------------------
+    // Modal Delete Confirmation
+    // -------------------------
+    function openDeleteModal(albumName) {
+        document.getElementById("delete-modal").classList.add("modal-open");
+        document.getElementById("delete-album-name").innerText = albumName;
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("delete-modal").classList.remove("modal-open");
+    }
+
+    // -------------------------
+    // Fermer en cliquant dehors
+    // -------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+        // Fermeture du drawer Album
+        const drawerAlbum = document.getElementById("drawer-album");
+        if (drawerAlbum) {
+            drawerAlbum.addEventListener("click", (e) => {
+                if (e.target === drawerAlbum) closeFormAlbum();
+            });
+        }
+
+        // Fermeture du drawer Edit
+        const drawerEdit = document.getElementById("drawer-edit");
+        if (drawerEdit) {
+            drawerEdit.addEventListener("click", (e) => {
+                if (e.target === drawerEdit) closeEditDrawer();
+            });
+        }
+    });
 </script>
 
 <div class="container mt-5">
 
     <hr class="section-separator" />
-    
-    <!-- SECTION PHOTOTHÈQUE -->
+
     <h2 class="text-center mb-4">Photothèque</h2>
 
+    @* Préparation pour l'insertion dynamique des images (simulation avec pioupiou.jpg) *@
+    @{
+        // CHEMIN D'IMAGE DYNAMIQUE (C'est la variable que vous récupérerez de votre base de données)
+        string dynamicImagePath = "/assets/images/pioupiou.jpg";
+
+        // Style CSS en ligne appliqué dynamiquement à la carte
+        string imageCardStyle = $"background-image: url('{dynamicImagePath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+    }
+
     <div class="album-grid">
-        <div class="album-card">
-            <span>Photo 1</span>
-        </div>
-        <div class="album-card">
-            <span>Photo 2</span>
-        </div>
-        <div class="album-card">
-            <span>Photo 3</span>
-        </div>
-        <div class="album-card">
-            <span>Photo 4</span>
+        @* Carte avec image en background *@
+        <div class="album-card image-bg" style="@imageCardStyle">
         </div>
 
+        @* Autres cartes avec image en background pour l'exemple *@
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+
+        @* CARTE MOSAÏQUE : VOIR TOUTES LES PHOTOS *@
         <div class="album-card see-all-card" onclick="window.location.href='@Url.Action("Phototheque", "Home")'">
-            <span>Voir toutes les photos</span>
+            <div class="mosaic-grid">
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+            </div>
+            <span class="see-all-text">Voir toutes les photos</span>
         </div>
     </div>
 
     <hr class="section-separator" />
 
-    <!-- SECTION ALBUMS -->
     <h2 class="text-center mb-4">Albums</h2>
 
     <div class="album-grid">
 
-        <!-- Exemple Album 1 -->
         <div class="album-card">
             <span>Album 1</span>
             <div class="actions">
                 <button class="edit-btn" onclick="openEditDrawer('Album 1')">
-                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                    <img src="/assets/images/icons/stylo.png" alt="Edit" class="icon" />
                 </button>
                 <button class="delete-btn" onclick="openDeleteModal('Album 1')">
-                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                    <img src="/assets/images/icons/dechets.png" alt="Delete" class="icon" />
                 </button>
             </div>
         </div>
 
-        <!-- Exemple Album 2 -->
         <div class="album-card">
             <span>Album 2</span>
             <div class="actions">
                 <button class="edit-btn" onclick="openEditDrawer('Album 2')">
-                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                    <img src="/assets/images/icons/stylo.png" alt="Edit" class="icon" />
                 </button>
                 <button class="delete-btn" onclick="openDeleteModal('Album 2')">
-                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                    <img src="/assets/images/icons/dechets.png" alt="Delete" class="icon" />
                 </button>
             </div>
         </div>
 
-        <!-- Exemple Album 3 -->
         <div class="album-card">
             <span>Album 3</span>
             <div class="actions">
                 <button class="edit-btn" onclick="openEditDrawer('Album 3')">
-                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                    <img src="/assets/images/icons/stylo.png" alt="Edit" class="icon" />
                 </button>
                 <button class="delete-btn" onclick="openDeleteModal('Album 3')">
-                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                    <img src="/assets/images/icons/dechets.png" alt="Delete" class="icon" />
                 </button>
             </div>
         </div>
 
-        <!-- Exemple Album 4 -->
         <div class="album-card">
             <span>Album 4</span>
             <div class="actions">
                 <button class="edit-btn" onclick="openEditDrawer('Album 4')">
-                    <img src="assets/images/icons/stylo.png" alt="Edit" class="icon" />
+                    <img src="/assets/images/icons/stylo.png" alt="Edit" class="icon" />
                 </button>
                 <button class="delete-btn" onclick="openDeleteModal('Album 4')">
-                    <img src="assets/images/icons/dechets.png" alt="Delete" class="icon" />
+                    <img src="/assets/images/icons/dechets.png" alt="Delete" class="icon" />
                 </button>
             </div>
         </div>
 
-        <!-- Ajouter un album -->
         <div class="album-card add-card" onclick="openFormAlbum()">
             <span class="plus">+</span>
         </div>
@@ -164,13 +172,29 @@ document.addEventListener("DOMContentLoaded", () => {
     <h2 class="text-center mb-4">Favoris</h2>
 
     <div class="album-grid">
-        <div class="album-card">
-            <span>Favoris</span>
+        @* Cartes Favoris avec image en background (4 pour l'exemple) *@
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+        <div class="album-card image-bg" style="@imageCardStyle">
+        </div>
+
+        @* CARTE MOSAÏQUE : VOIR TOUS LES FAVORIS *@
+        <div class="album-card see-all-card" onclick="window.location.href='@Url.Action("Favoris", "Home")'">
+            <div class="mosaic-grid">
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+                <div class="mosaic-item" style="background-image: url('@dynamicImagePath');"></div>
+            </div>
+            <span class="see-all-text">Voir tous les favoris</span>
         </div>
     </div>
 </div>
 
-<!-- PANNEAU LATERAL AJOUT ALBUM -->
 <div id="drawer-album" class="drawer-overlay">
     <div class="drawer-panel">
 
@@ -191,7 +215,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 </div>
 
-<!-- Modal de confirmation pour supprimer un album -->
 <div id="delete-modal" class="modal-overlay">
     <div class="modal-panel">
         <h2>Êtes-vous sûr de vouloir supprimer cet album ?</h2>
@@ -203,7 +226,6 @@ document.addEventListener("DOMContentLoaded", () => {
     </div>
 </div>
 
-<!-- Drawer pour Edit Album -->
 <div id="drawer-edit" class="drawer-overlay">
     <div class="drawer-panel">
 
@@ -225,17 +247,18 @@ document.addEventListener("DOMContentLoaded", () => {
     /* Grille responsive pour albums */
     .album-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        /* Changement ici : auto-fit pour que les colonnes s'étirent et occupent tout l'espace */
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 25px;
-        margin-top: 30px;
-        margin-bottom: 60px;
+        /* AJOUTS ICI : margin auto pour centrer la grille horizontalement */
+        margin: 30px auto 60px auto;
+        max-width: 1200px; /* Ajout d'une max-width pour que margin: auto fonctionne bien */
     }
-
     /* Style global des cartes (albums) */
     .album-card {
         height: 150px;
         border-radius: 15px;
-        background: #e9f0ff; /* Bleu cohérent pour tout */
+        background: #e9f0ff; /* Couleur de fond par défaut pour les cartes sans image */
         display: flex;
         justify-content: center;
         align-items: center;
@@ -248,9 +271,71 @@ document.addEventListener("DOMContentLoaded", () => {
         padding: 10px;
         color: #2d2d2d;
         position: relative; /* Important pour les icônes */
+        /* Assurez-vous que le background-image ne se répète pas par défaut */
+        background-repeat: no-repeat;
     }
 
-    .album-card:hover {
+        /* ************************************************* */
+        /* NOUVEAU STYLE CARTE MOSAÏQUE (Voir toutes les photos/favoris) */
+        /* ************************************************* */
+        .album-card.see-all-card {
+            background: none; /* Supprimer la couleur de fond */
+            padding: 0; /* Important: enlever le padding pour que la grille interne utilise tout l'espace */
+            display: block; /* Rétablir l'affichage normal pour contenir la grille interne */
+            overflow: hidden; /* Masque les coins de la grille interne */
+            position: relative;
+        }
+
+    .mosaic-grid {
+        display: grid;
+        grid-template-columns: repeat(2, 1fr); /* Grille 2x2 */
+        grid-template-rows: repeat(2, 1fr);
+        height: 100%;
+        width: 100%;
+    }
+
+    .mosaic-item {
+        background-size: cover;
+        background-position: center;
+    }
+
+    .album-card.see-all-card .see-all-text {
+        position: absolute;
+        top: 50%;
+        left: 50%;
+        transform: translate(-50%, -50%);
+        z-index: 10;
+        /* Style du texte */
+        font-size: 1.1rem;
+        font-weight: 700;
+        padding: 5px 10px;
+        border-radius: 5px;
+        background: rgba(255, 255, 255, 0.9); /* Fond blanc semi-transparent */
+        color: #6c63ff; /* Couleur du lien */
+        box-shadow: 0 0 5px rgba(0,0,0,0.3);
+        transition: all 0.2s ease;
+    }
+
+    /* Effet de survol: assombrir la mosaïque */
+    .album-card.see-all-card:hover .mosaic-item {
+        opacity: 0.8;
+    }
+
+    .album-card.see-all-card:hover .see-all-text {
+        transform: translate(-50%, -50%) scale(1.05);
+    }
+
+    /* Styles spécifiques aux cartes ayant une image de fond (pour l'effet de survol) */
+    .album-card.image-bg:hover {
+        /* Assombrissement au survol pour les cartes avec image */
+        background-color: rgba(0, 0, 0, 0.2) !important;
+        background-blend-mode: overlay; /* Mélange la couleur de survol avec l'image */
+        transform: translateY(-5px);
+        box-shadow: 0 4px 12px rgba(0,0,0,0.25);
+    }
+
+    /* Style de survol pour les cartes sans image */
+    .album-card:not(.image-bg):hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
         background: #cbdcff; /* Slightly darker blue on hover */
@@ -270,11 +355,12 @@ document.addEventListener("DOMContentLoaded", () => {
         height: 20px;
         cursor: pointer;
         transition: transform 0.3s ease;
+        filter: drop-shadow(0 0 2px rgba(0, 0, 0, 1));
     }
 
-    .icon:hover {
-        transform: scale(1.3); /* Légère animation au survol */
-    }
+        .icon:hover {
+            transform: scale(1.3); /* Légère animation au survol */
+        }
 
     /* Bouton Edit */
     .edit-btn {
@@ -299,16 +385,26 @@ document.addEventListener("DOMContentLoaded", () => {
         color: #6c63ff;
     }
 
-    .add-card .plus {
-        font-size: 3rem;
-        font-weight: bold;
+        .add-card .plus {
+            font-size: 3rem;
+            font-weight: bold;
+        }
+
+        .add-card:hover {
+            background: #6c63ff !important;
+            color: white !important;
+            border-color: transparent;
+        }
+
+    /* Carte 'Voir toutes les photos' (Ancien style simple) */
+    .see-all-card {
+        /* On conserve la couleur de base pour le fond si la mosaïque ne charge pas, mais la mosaïque override le fond */
+        background: #d4e0ff;
     }
 
-    .add-card:hover {
-        background: #6c63ff !important;
-        color: white !important;
-        border-color: transparent;
-    }
+        .see-all-card:hover {
+            /* On retire l'ancien hover pour éviter un conflit */
+        }
 
     /* Separator */
     .section-separator {
@@ -353,15 +449,15 @@ document.addEventListener("DOMContentLoaded", () => {
         gap: 15px;
     }
 
-    .album-form input,
-    .album-form select,
-    .album-form textarea {
-        width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid #c7c7c7;
-        font-size: 1rem;
-    }
+        .album-form input,
+        .album-form select,
+        .album-form textarea {
+            width: 100%;
+            padding: 10px;
+            border-radius: 10px;
+            border: 1px solid #c7c7c7;
+            font-size: 1rem;
+        }
 
     /* Boutons */
     .drawer-buttons {
@@ -387,17 +483,22 @@ document.addEventListener("DOMContentLoaded", () => {
         font-size: 1rem;
     }
 
-    .btn-cancel:hover { background: #b6b6b6; }
-    .btn-confirm:hover { background: #5a56e0; }
+    .btn-cancel:hover {
+        background: #b6b6b6;
+    }
+
+    .btn-confirm:hover {
+        background: #5a56e0;
+    }
 
     /* Animation drawer actif */
     .drawer-open {
         width: 100%;
     }
 
-    .drawer-open .drawer-panel {
-        right: 0;
-    }
+        .drawer-open .drawer-panel {
+            right: 0;
+        }
 
     .no-scroll {
         overflow: hidden;
@@ -437,12 +538,5 @@ document.addEventListener("DOMContentLoaded", () => {
         margin-top: 20px;
     }
 
-    .btn-cancel {
-        background: #ccc;
-    }
-
-    .btn-confirm {
-        background: #6c63ff;
-        color: white;
-    }
+    /* Les styles des boutons Annuler/Confirmer sont déjà définis plus haut */
 </style>

@@ -1,5 +1,11 @@
+wwwroot\assets\images\icons\check.png
+wwwroot\assets\images\icons\check2.png
+wwwroot\assets\images\icons\dechets.png
+wwwroot\assets\images\icons\heart.png
+wwwroot\assets\images\icons\redHeart.png
+wwwroot\assets\images\icons\stylo.png
+wwwroot\assets\images\pioupiou.jpg
 wwwroot\css\site.css
-wwwroot\favicon.ico
 wwwroot\js\site.js
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css
 wwwroot\lib\bootstrap\dist\css\bootstrap-grid.css.map

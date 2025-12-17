@@ -3,72 +3,332 @@
 }
 
 <script>
-// -------------------------
-// Logic to handle the favorite heart change
-// -------------------------
-function toggleFavorite(photoId) {
-    const heartIcon = document.getElementById(`heart-${photoId}`);
-    if (heartIcon.src.includes("heart.png")) {
-        heartIcon.src = "/assets/images/icons/redHeart.png"; // Change to red heart
-    } else {
-        heartIcon.src = "/assets/images/icons/heart.png"; // Change back to regular heart
-    }
-}
+    // Tableau des IDs de photos (simule la liste de votre base de données)
+    const photoIds = ['photo-1', 'photo-2', 'photo-3', 'photo-4', 'photo-5'];
 
+    // -------------------------
+    // Logic to handle the favorite heart change
+    // -------------------------
+    function toggleFavorite(photoId) {
+        const heartIcon = document.getElementById(`heart-${photoId}`);
+        if (heartIcon.src.includes("heart.png")) {
+            heartIcon.src = "/assets/images/icons/redHeart.png"; // Change to red heart
+        } else {
+            heartIcon.src = "/assets/images/icons/heart.png"; // Change back to regular heart
+        }
+    }
+
+    // -------------------------
+    // Toggle Visibility of Date Inputs (Precise vs Range)
+    // -------------------------
+    function toggleRangeInputs() {
+        const mode = document.getElementById('date-range-mode').value;
+        const preciseInput = document.getElementById('precise-date-input');
+        const rangeInputs = document.getElementById('range-date-inputs');
+
+        if (mode === 'precise') {
+            preciseInput.style.display = 'flex';
+            rangeInputs.style.display = 'none';
+        } else {
+            preciseInput.style.display = 'none';
+            rangeInputs.style.display = 'flex';
+        }
+    }
+
+    // -------------------------
+    // Toggle Visibility of ALL Date Filters
+    // -------------------------
+    function toggleDateFilters() {
+        const filterType = document.getElementById('filter-type').value;
+        const dateGroup = document.getElementById('date-selection-group');
+
+        if (filterType === 'date_mode') {
+            dateGroup.style.display = 'flex';
+            toggleRangeInputs();
+        } else {
+            dateGroup.style.display = 'none';
+        }
+    }
+
+    // -------------------------
+    // Toggle individual photo selection logic (Function used by listeners)
+    // -------------------------
+    function handlePhotoClick() {
+        this.classList.toggle('selected');
+        this.blur();
+    }
+
+    // -------------------------
+    // Add listeners to enable selection mode
+    // -------------------------
+    function addSelectionListeners() {
+        const selectableCards = document.querySelectorAll('.selectable-card');
+        selectableCards.forEach(card => {
+            card.classList.add('selection-active');
+            card.addEventListener('click', handlePhotoClick);
+        });
+    }
+
+    // -------------------------
+    // Remove listeners to disable selection mode
+    // -------------------------
+    function removeSelectionListeners() {
+        const selectableCards = document.querySelectorAll('.selectable-card');
+        selectableCards.forEach(card => {
+            card.classList.remove('selection-active');
+            card.classList.remove('selected');
+            card.removeEventListener('click', handlePhotoClick);
+        });
+    }
+
+    // -------------------------
+    // Toggle Selection Mode (Visual and Functional)
+    // -------------------------
+    function toggleSelectionMode(activate) {
+        const filterBar = document.getElementById('filter-bar');
+        const selectionBar = document.getElementById('selection-management');
+        const selectButton = document.getElementById('select-button');
+
+        if (activate) {
+            filterBar.style.display = 'none';
+            selectButton.style.display = 'none';
+            selectionBar.style.display = 'flex';
+
+            addSelectionListeners();
+
+        } else {
+            filterBar.style.display = 'flex';
+            selectButton.style.display = 'inline-block';
+            selectionBar.style.display = 'none';
+
+            removeSelectionListeners();
+        }
+    }
+
+    // =========================================================
+    // FONCTIONS POUR LA MODALE (LIGHTBOX)
+    // =========================================================
+
+    function loadPhotoDetails(photoId) {
+        const card = document.getElementById(photoId);
+        const imageUrl = card.style.backgroundImage.slice(5, -2).replace(/"/g, "");
+
+        document.getElementById('modal-photo').src = imageUrl;
+        document.getElementById('modal-photo').alt = `Photo ${photoId}`;
+
+        // Mettre à jour les données affichées (simulées)
+        document.getElementById('detail-photo-id').textContent = photoId;
+        document.getElementById('detail-date').textContent = '2025-12-17 14:30:00';
+        document.getElementById('detail-battery').textContent = '85%';
+        document.getElementById('detail-resolution').textContent = '1920x1080';
+        document.getElementById('detail-favorite').textContent = card.querySelector('.actions .icon').src.includes('redHeart.png') ? 'Oui' : 'Non';
+
+        document.getElementById('photo-viewer-modal').setAttribute('data-current-id', photoId);
+
+        // Mettre à jour l'état des boutons de navigation
+        const currentIndex = photoIds.indexOf(photoId);
+        document.getElementById('prev-btn').disabled = currentIndex === 0;
+        document.getElementById('next-btn').disabled = currentIndex === photoIds.length - 1;
+    }
+
+    function openPhotoModal(cardElement) {
+        if (cardElement.classList.contains('selection-active')) {
+            return;
+        }
+
+        const photoId = cardElement.id;
+        loadPhotoDetails(photoId);
+
+        const modal = document.getElementById('photo-viewer-modal');
+        modal.style.display = 'flex';
+        document.body.classList.add('modal-open-body');
+    }
+
+    function closePhotoModal() {
+        const modal = document.getElementById('photo-viewer-modal');
+        modal.style.display = 'none';
+        document.body.classList.remove('modal-open-body');
+        // S'assurer que le panneau de détails est replié
+        const detailPanel = document.getElementById('detail-panel');
+        detailPanel.classList.remove('open');
+        document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+    }
+
+    function navigatePhoto(direction) {
+        const modal = document.getElementById('photo-viewer-modal');
+        const currentId = modal.getAttribute('data-current-id');
+        const currentIndex = photoIds.indexOf(currentId);
+
+        let newIndex = currentIndex + direction;
+
+        if (newIndex >= 0 && newIndex < photoIds.length) {
+            loadPhotoDetails(photoIds[newIndex]);
+            // Replier les détails lors du changement de photo
+            const detailPanel = document.getElementById('detail-panel');
+            detailPanel.classList.remove('open');
+            document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+        }
+    }
+
+    // Basculer la section des détails (avec gestion du texte du bouton)
+    function toggleDetails() {
+        const detailPanel = document.getElementById('detail-panel');
+        const toggleBtn = document.getElementById('toggle-details-button');
+
+        detailPanel.classList.toggle('open');
+
+        const isOpen = detailPanel.classList.contains('open');
+        toggleBtn.querySelector('.btn-text').textContent = isOpen ? 'Masquer les détails' : 'Détails de la photo';
+    }
+
+    // -------------------------
+    // Initialisation
+    // -------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+        toggleDateFilters();
+        document.getElementById('selection-management').style.display = 'none';
+
+        // Rendre les cartes cliquables pour ouvrir la modale
+        document.querySelectorAll('.album-card.selectable-card').forEach(card => {
+            card.addEventListener('click', function(e) {
+                if (!this.classList.contains('selection-active')) {
+                    openPhotoModal(this);
+                }
+            });
+        });
+
+        // Fermeture de la modale en cliquant en dehors du contenu principal
+        const modal = document.getElementById('photo-viewer-modal');
+
+        modal.addEventListener('click', function(e) {
+            // Si l'élément cliqué est la modale elle-même (l'arrière-plan)
+            if (e.target === modal) {
+                closePhotoModal();
+            }
+        });
+    });
 </script>
 
 <div class="container mt-5">
+    @* Préparation pour l'insertion dynamique des images (simulation avec pioupiou.jpg) *@
+    @{
+        string dynamicImagePath = "/assets/images/pioupiou.jpg";
+        string checkIconPath = "/assets/images/icons/check2.png";
+        string imageCardStyle = $"background-image: url('{dynamicImagePath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+    }
 
     <hr class="section-separator" />
-    
-    <!-- SECTION PHOTOTHÈQUE -->
+
     <h2 class="text-center mb-4">Photothèque</h2>
 
+    <div class="management-zone">
+
+        <button id="select-button" class="btn btn-primary management-btn" onclick="toggleSelectionMode(true)">
+            Sélectionner
+        </button>
+
+        <div id="filter-bar" class="filter-bar">
+
+            <div class="filter-group">
+                <label for="filter-type">Affichage :</label>
+                <select id="filter-type" class="filter-select" onchange="toggleDateFilters()">
+                    <option value="all">Tous</option>
+                    <option value="favorites">Favoris</option>
+                    <option value="date_mode">Date (Précise ou Plage)</option>
+                </select>
+            </div>
+
+            <div id="date-selection-group" class="date-selection-group">
+                <div class="filter-group">
+                    <label for="date-range-mode">Type de recherche :</label>
+                    <select id="date-range-mode" class="filter-select" onchange="toggleRangeInputs()">
+                        <option value="precise">Date précise</option>
+                        <option value="range">Plage de date</option>
+                    </select>
+                </div>
+                <div class="filter-group" id="precise-date-input">
+                    <input type="date" id="filter-date" class="filter-input" />
+                </div>
+                <div class="filter-group" id="range-date-inputs" style="display: none;">
+                    <input type="date" id="filter-date-start" class="filter-input" placeholder="Du..." />
+                    <input type="date" id="filter-date-end" class="filter-input" placeholder="Au..." />
+                </div>
+            </div>
+        </div>
+
+        <div id="selection-management" class="selection-management-bar">
+
+            <button id="cancel-button" class="btn btn-secondary management-btn" onclick="toggleSelectionMode(false)">
+                Annuler
+            </button>
+
+            <div class="dropdown">
+                <button id="action-button" class="btn btn-action management-btn dropdown-toggle">
+                    <span class="dots">•••</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#">Ajouter à un album</a>
+                    <a href="#">Ajouter aux favoris</a>
+                    <a href="#">Supprimer la sélection</a>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="album-grid">
-        <!-- Exemple Photo 1 -->
-        <div class="album-card">
-            <span>Photo 1</span>
+        @* Cartes avec un ID unique pour la gestion *@
+        <div class="album-card image-bg selectable-card" style="@imageCardStyle" id="photo-1" data-photo-id="1" tabindex="0">
             <div class="actions">
-                <!-- Heart icon for favorite functionality -->
-                <button class="favorite-btn" onclick="toggleFavorite('photo1')">
+                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite('photo1');">
                     <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo1" />
                 </button>
             </div>
+            <div class="selection-overlay">
+                <img src="@checkIconPath" alt="Selected" class="check-icon" />
+            </div>
         </div>
 
-        <!-- Exemple Photo 2 -->
-        <div class="album-card">
-            <span>Photo 2</span>
+        <div class="album-card image-bg selectable-card" style="@imageCardStyle" id="photo-2" data-photo-id="2" tabindex="0">
             <div class="actions">
-                <button class="favorite-btn" onclick="toggleFavorite('photo2')">
+                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite('photo2');">
                     <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo2" />
                 </button>
             </div>
+            <div class="selection-overlay">
+                <img src="@checkIconPath" alt="Selected" class="check-icon" />
+            </div>
         </div>
 
-        <!-- Exemple Photo 3 -->
-        <div class="album-card">
-            <span>Photo 3</span>
+        <div class="album-card image-bg selectable-card" style="@imageCardStyle" id="photo-3" data-photo-id="3" tabindex="0">
             <div class="actions">
-                <button class="favorite-btn" onclick="toggleFavorite('photo3')">
+                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite('photo3');">
                     <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo3" />
                 </button>
             </div>
-        </div>
-
-        <!-- Exemple Photo 4 -->
-        <div class="album-card">
-            <span>Photo 4</span>
-            <div class="actions">
-                <button class="favorite-btn" onclick="toggleFavorite('photo4')">
-                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo4" />
-                </button>
+            <div class="selection-overlay">
+                <img src="@checkIconPath" alt="Selected" class="check-icon" />
             </div>
         </div>
 
-        <!-- Card to add a photo -->
-        <div class="album-card add-card" onclick="window.location.href='/Home/UploadPhoto'">
-            <span class="plus">+</span>
+        <div class="album-card image-bg selectable-card" style="@imageCardStyle" id="photo-4" data-photo-id="4" tabindex="0">
+            <div class="actions">
+                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite('photo4');">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo4" />
+                </button>
+            </div>
+            <div class="selection-overlay">
+                <img src="@checkIconPath" alt="Selected" class="check-icon" />
+            </div>
+        </div>
+
+        <div class="album-card image-bg selectable-card" style="@imageCardStyle" id="photo-5" data-photo-id="5" tabindex="0">
+            <div class="actions">
+                <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite('photo5');">
+                    <img src="/assets/images/icons/heart.png" alt="Favorite" class="icon" id="heart-photo5" />
+                </button>
+            </div>
+            <div class="selection-overlay">
+                <img src="@checkIconPath" alt="Selected" class="check-icon" />
+            </div>
         </div>
     </div>
 
@@ -76,21 +336,416 @@ function toggleFavorite(photoId) {
 
 </div>
 
+<div id="photo-viewer-modal" class="photo-viewer-modal">
+
+    <div class="viewer-content">
+        <button id="prev-btn" class="nav-btn left" onclick="navigatePhoto(-1)">&#10094;</button>
+
+        <div class="image-details-master-container">
+
+            <div class="photo-viewer-box">
+                <img id="modal-photo" src="" alt="Photo en grand" class="main-photo" />
+            </div>
+
+            <button id="toggle-details-button" class="toggle-details-btn" onclick="toggleDetails()">
+                <span class="btn-text">Détails de la photo</span>
+                <span id="detail-arrow" class="arrow">&#9660;</span>
+            </button>
+
+            <div id="detail-panel" class="detail-panel">
+                <div class="detail-group">
+                    <div class="detail-item"><strong>ID Capture :</strong> <span id="detail-photo-id"></span></div>
+                    <div class="detail-item"><strong>Date :</strong> <span id="detail-date"></span></div>
+                </div>
+                <div class="detail-group">
+                    <div class="detail-item"><strong>Batterie :</strong> <span id="detail-battery"></span></div>
+                    <div class="detail-item"><strong>Résolution :</strong> <span id="detail-resolution"></span></div>
+                </div>
+                <div class="detail-item"><strong>Favoris :</strong> <span id="detail-favorite"></span></div>
+            </div>
+
+        </div>
+        <button id="next-btn" class="nav-btn right" onclick="navigatePhoto(1)">&#10095;</button>
+    </div>
+
+</div>
 <style>
+    /* NOUVEAUX STYLES POUR LA MODALE (LIGHTBOX) */
+    .modal-open-body {
+        overflow: hidden;
+    }
+
+    .photo-viewer-modal {
+        display: none;
+        position: fixed;
+        z-index: 1000;
+        left: 0;
+        top: 0;
+        width: 100%;
+        height: 100%;
+        overflow: auto;
+        background-color: rgba(0,0,0,0.9);
+        justify-content: center;
+        align-items: center;
+    }
+
+    .viewer-content {
+        position: relative;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        max-width: 90%;
+        /* Hauteur pour que la modale tienne l'image ET les détails */
+        max-height: 90vh;
+    }
+
+    /* Conteneur Master pour forcer l'alignement vertical Image + Détails */
+    .image-details-master-container {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        max-width: 80vw;
+        max-height: 90vh;
+        position: relative;
+    }
+
+    /* Conteneur de l'image seule */
+    .photo-viewer-box {
+        position: relative;
+        /* Limite l'image sans bloquer l'espace pour les détails */
+        max-height: 75vh;
+        max-width: 100%;
+        box-shadow: 0 4px 20px rgba(0, 0, 0, 0.5);
+        border-radius: 15px 15px 0 0; /* Arrondi seulement en haut */
+        overflow: hidden;
+        z-index: 601; /* Doit être au-dessus du bouton de détails replié */
+    }
+
+    .main-photo {
+        width: 100%;
+        height: auto;
+        display: block;
+        border-radius: 0;
+    }
+
+
+    /* Boutons de Navigation (Flèches) */
+    .nav-btn {
+        cursor: pointer;
+        position: absolute;
+        top: 50%;
+        width: auto;
+        padding: 16px;
+        margin-top: -50px;
+        color: white;
+        font-weight: bold;
+        font-size: 20px;
+        transition: 0.6s ease;
+        user-select: none;
+        background-color: rgba(0,0,0,0.5);
+        border: none;
+        z-index: 1010;
+        border-radius: 5px;
+    }
+
+        .nav-btn.right {
+            right: -60px;
+        }
+
+        .nav-btn.left {
+            left: -60px;
+        }
+
+        .nav-btn:hover:not(:disabled) {
+            background-color: rgba(0,0,0,0.8);
+        }
+
+        .nav-btn:disabled {
+            opacity: 0.3;
+            cursor: default;
+        }
+
+    /* Bouton Détails - PAS DE POSITION ABSOLUE */
+    .toggle-details-btn {
+        width: 100%;
+        background-color: rgba(0, 0, 0, 0.7);
+        color: white;
+        padding: 10px 20px;
+        border: none;
+        cursor: pointer;
+        /* Utilise le border-radius de l'image (photo-viewer-box) */
+        border-radius: 0 0 15px 15px;
+        display: flex;
+        justify-content: center;
+        align-items: center;
+        font-size: 1rem;
+        transition: background-color 0.3s;
+        /* Reste collé au bas de l'image */
+        margin-top: 0;
+        z-index: 600;
+    }
+
+        .toggle-details-btn:hover {
+            background-color: rgba(0, 0, 0, 0.9);
+        }
+
+        .toggle-details-btn .arrow {
+            margin-left: 10px;
+            transition: transform 0.3s ease;
+        }
+
+    /* Panneau de Détails (Déroulant) */
+    .detail-panel {
+        width: 100%;
+        max-height: 0; /* Caché par défaut */
+        overflow: hidden;
+        background-color: rgba(255, 255, 255, 0.98);
+        color: #2d2d2d;
+        padding: 0 20px;
+        border-radius: 0 0 15px 15px;
+        transition: max-height 0.5s ease-in-out, padding 0.5s ease-in-out;
+        box-sizing: border-box;
+        box-shadow: 0 10px 20px rgba(0,0,0,0.1);
+        z-index: 599;
+        /* AJUSTEMENT CRUCIAL: Retire la marge négative quand fermé pour ne pas chevaucher */
+        margin-top: 0;
+    }
+
+        .detail-panel.open {
+            max-height: 200px;
+            padding: 15px 20px;
+            margin-top: 0;
+        }
+
+    /* On utilise l'inverse pour cibler l'icône de flèche:
+           Quand le panneau est ouvert, le bouton (qui le précède dans le DOM corrigé) tourne la flèche.
+           Le sélecteur CSS est donc :
+        */
+    #toggle-details-button.open .arrow {
+        transform: rotate(180deg);
+    }
+
+    /* Styles internes aux détails */
+    .detail-group {
+        display: flex;
+        justify-content: space-between;
+        margin-bottom: 5px;
+    }
+
+    .detail-item {
+        flex-basis: 48%;
+        padding: 3px 0;
+        font-size: 0.9rem;
+    }
+    
+
+    /* Styles pour la barre de gestion existante */
+    .management-zone {
+        display: flex;
+        justify-content: space-between; 
+        align-items: center;
+        margin-bottom: 30px;
+    }
+    
+    .management-btn {
+        padding: 8px 15px;
+        border-radius: 8px;
+        font-weight: 600;
+        cursor: pointer;
+        transition: background-color 0.2s;
+    }
+    
+    .btn-primary {
+        background-color: #6c63ff;
+        color: white;
+        border: none;
+    }
+    .btn-primary:hover {
+        background-color: #5a56e0;
+    }
+    
+    .btn-secondary {
+        background-color: #ccc;
+        color: #2d2d2d;
+        border: 1px solid #c7c7c7;
+    }
+    .btn-secondary:hover {
+        background-color: #bbb;
+    }
+
+    /* Barre d'actions multiples (quand Sélectionner est cliqué) */
+    .selection-management-bar {
+        display: flex; 
+        gap: 15px;
+        align-items: center;
+    }
+    
+    /* Bouton d'actions (3 points) */
+    .dropdown {
+        position: relative;
+        display: inline-block;
+    }
+    .btn-action {
+        background: #f0f0f0;
+        color: #6c63ff;
+        border: 1px solid #c7c7c7;
+        font-size: 1.5rem;
+        line-height: 1;
+        padding: 4px 12px;
+    }
+    .btn-action:hover {
+        background: #e0e0e0;
+    }
+    .dots {
+        letter-spacing: -2px; 
+        font-weight: 900;
+        display: block; 
+        transform: translateY(-2px);
+    }
+    
+    /* Menu déroulant */
+    .dropdown-content {
+        display: none;
+        position: absolute;
+        right: 0;
+        background-color: #ffffff;
+        min-width: 200px;
+        box-shadow: 0px 8px 16px 0px rgba(0,0,0,0.2);
+        z-index: 100;
+        border-radius: 8px;
+        overflow: hidden;
+    }
+
+    .dropdown-content a {
+        color: #2d2d2d;
+        padding: 12px 16px;
+        text-decoration: none;
+        display: block;
+        font-size: 0.9rem;
+    }
+
+    .dropdown-content a:hover {
+        background-color: #f1f1f1;
+        color: #6c63ff;
+    }
+    
+    .dropdown:hover .dropdown-content {
+        display: block;
+    }
+
+    /* ********************************************** */
+    /* STYLES DE FILTRE */
+    /* ********************************************** */
+    #filter-bar {
+        display: flex; 
+        flex-wrap: wrap;
+        gap: 20px;
+        justify-content: flex-start; 
+        align-items: center;
+        padding: 15px;
+        border-radius: 10px;
+        background: #f8f9fa; 
+        box-shadow: 0 1px 3px rgba(0,0,0,0.05);
+        flex-grow: 1;
+        margin-left: 20px; 
+    }
+    
+    .date-selection-group {
+        display: flex;
+        gap: 20px;
+        flex-wrap: wrap;
+    }
+
+    .filter-group {
+        display: flex;
+        align-items: center;
+        gap: 8px;
+    }
+
+    .filter-group label {
+        font-weight: 600;
+        color: #2d2d2d;
+        font-size: 0.95rem;
+        white-space: nowrap; 
+    }
+
+    .filter-select, .filter-input {
+        padding: 8px 12px;
+        border-radius: 8px;
+        border: 1px solid #c7c7c7;
+        font-size: 0.95rem;
+        transition: border-color 0.2s;
+        max-width: 200px; 
+    }
+
+    .filter-input {
+         max-width: 150px;
+    }
+
+    .filter-select:focus, .filter-input:focus {
+        border-color: #6c63ff; 
+        outline: none;
+        box-shadow: 0 0 0 2px rgba(108, 99, 255, 0.2);
+    }
+    
+    /* Media Query pour les petits écrans */
+    @@media (max-width: 768px) {
+        .management-zone {
+            flex-direction: column;
+            align-items: flex-start;
+        }
+        
+        #select-button {
+            width: 100%;
+        }
+        
+        #filter-bar, .selection-management-bar {
+            margin-left: 0;
+            margin-top: 15px;
+            width: 100%;
+        }
+
+        .filter-group, .date-selection-group {
+            flex-direction: column;
+            align-items: flex-start;
+            gap: 10px;
+        }
+        .filter-group label {
+            width: 100%; 
+        }
+        .filter-select, .filter-input {
+            width: 100%; 
+            max-width: none;
+        }
+        /* Ajuster la modale pour les petits écrans */
+        .nav-btn {
+            top: 20%;
+            margin-top: 0;
+            padding: 10px;
+        }
+        .nav-btn.right {
+            right: 5px;
+        }
+        .nav-btn.left {
+            left: 5px;
+        }
+    }
+
+
     /* Grille responsive pour albums */
     .album-grid {
         display: grid;
-        grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+        grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
         gap: 25px;
-        margin-top: 30px;
-        margin-bottom: 60px;
+        margin: 30px auto 60px auto;
+        max-width: 1200px;
     }
 
     /* Style global des cartes (albums) */
     .album-card {
         height: 150px;
         border-radius: 15px;
-        background: #e9f0ff; /* Bleu cohérent pour tout */
+        background: #e9f0ff; 
         display: flex;
         justify-content: center;
         align-items: center;
@@ -102,22 +757,108 @@ function toggleFavorite(photoId) {
         text-align: center;
         padding: 10px;
         color: #2d2d2d;
-        position: relative; /* Important pour les icônes */
+        position: relative; 
+        background-repeat: no-repeat; 
+    }
+    
+    /* CORRECTION : Retire le focus/outline du navigateur sur les cartes sélectionnables */
+    .selectable-card:focus,
+    .selectable-card:active {
+        outline: none !important; 
+    }
+
+
+    /* Styles pour les cartes avec image */
+    .album-card.image-bg {
+        color: white; 
+        padding: 0; 
+        justify-content: flex-start; 
+        align-items: flex-start;
+    }
+
+    /* Annule l'effet 3D quand la sélection est active */
+    .album-card.selection-active:hover {
+        transform: none; 
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
     }
 
     .album-card:hover {
         transform: translateY(-5px);
         box-shadow: 0 4px 12px rgba(0,0,0,0.25);
-        background: #cbdcff; /* Slightly darker blue on hover */
+        background: #cbdcff; 
     }
 
-    /* Actions - Crayon et Corbeille */
+    /* ********************************************** */
+    /* STYLES DE SÉLECTION VISUELLE */
+    /* ********************************************** */
+    
+    /* Overlay (Cercle sans bordure) */
+    .selection-overlay {
+        position: absolute;
+        top: 10px;
+        left: 10px;
+        width: 24px;
+        height: 24px;
+        border-radius: 50%;
+        border: none; 
+        background: rgba(0, 0, 0, 0.4); 
+        display: none; 
+        justify-content: center;
+        align-items: center;
+        z-index: 10;
+        transition: all 0.2s;
+    }
+
+    /* Montrer l'overlay quand la sélection est active */
+    .album-card.selection-active .selection-overlay {
+        display: flex; 
+        opacity: 0.8;
+        cursor: pointer; 
+    }
+    
+    /* Cacher le check-icon par défaut */
+    .check-icon {
+        width: 16px; 
+        height: 16px;
+        display: none; 
+        filter: none; 
+    }
+
+    /* État sélectionné */
+    .album-card.selected {
+        /* Revert à l'ombre de base */
+        box-shadow: 0 2px 5px rgba(0,0,0,0.15); 
+    }
+    
+    /* Montrer le check-icon seulement si la carte est sélectionnée */
+    .album-card.selected .selection-overlay {
+        background: #6c63ff; 
+        border: none; 
+        opacity: 1; 
+    }
+
+    .album-card.selected .check-icon {
+        display: block;
+    }
+    
+    /* Masquer l'icône de favori en mode sélection pour éviter la confusion */
+    .album-card.selection-active .actions {
+        display: none;
+    }
+
+
+    /* Actions - Cœur Favoris */
     .album-card .actions {
         position: absolute;
         top: 10px;
         right: 10px;
         display: flex;
         flex-direction: column;
+        z-index: 5;
+        background: none; 
+        backdrop-filter: none; 
+        padding: 5px; 
+        border-radius: 5px;
     }
 
     .icon {
@@ -133,32 +874,18 @@ function toggleFavorite(photoId) {
     }
 
     .icon:hover {
-        transform: scale(1.3); /* Légère animation au survol */
+        transform: scale(1.3); 
     }
 
-    /* Bouton Edit */
-    .edit-btn {
+    /* Boutons Favoris / Edit / Delete */
+    .favorite-btn, .edit-btn, .delete-btn {
         background: none;
         border: none;
         font-size: 1.5rem;
         cursor: pointer;
+        padding: 0; 
     }
-
-    /* Bouton Delete */
-    .delete-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
-    .favorite-btn {
-        background: none;
-        border: none;
-        font-size: 1.5rem;
-        cursor: pointer;
-    }
-
+    
     /* Carte Ajouter une photo */
     .add-card {
         background: #ffffff !important;
@@ -184,133 +911,4 @@ function toggleFavorite(photoId) {
         border: 0;
         border-top: 2px solid #d0d0d0;
     }
-
-    /* --- Drawer Overlay --- */
-    .drawer-overlay {
-        position: fixed;
-        top: 0;
-        right: 0;
-        width: 0;
-        height: 100%;
-        background: rgba(0,0,0,0.35);
-        backdrop-filter: blur(3px);
-        overflow: hidden;
-        transition: width 0.3s ease;
-        z-index: 2000;
-    }
-
-    /* --- Drawer Panel --- */
-    .drawer-panel {
-        position: absolute;
-        top: 0;
-        right: -400px;
-        width: 400px;
-        height: 100%;
-        background: #ffffff;
-        box-shadow: -3px 0 10px rgba(0,0,0,0.2);
-        padding: 25px;
-        border-radius: 25px 0 0 25px;
-        transition: right 0.3s ease;
-    }
-
-    /* --- Formulaire --- */
-    .album-form {
-        display: flex;
-        flex-direction: column;
-        gap: 15px;
-    }
-
-    .album-form input,
-    .album-form select,
-    .album-form textarea {
-        width: 100%;
-        padding: 10px;
-        border-radius: 10px;
-        border: 1px solid #c7c7c7;
-        font-size: 1rem;
-    }
-
-    /* Boutons */
-    .drawer-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .btn-cancel {
-        padding: 10px 20px;
-        border-radius: 10px;
-        background: #cccccc;
-        border: none;
-        font-size: 1rem;
-    }
-
-    .btn-confirm {
-        padding: 10px 20px;
-        border-radius: 10px;
-        background: #6c63ff;
-        color: white;
-        border: none;
-        font-size: 1rem;
-    }
-
-    .btn-cancel:hover { background: #b6b6b6; }
-    .btn-confirm:hover { background: #5a56e0; }
-
-    /* Animation drawer actif */
-    .drawer-open {
-        width: 100%;
-    }
-
-    .drawer-open .drawer-panel {
-        right: 0;
-    }
-
-    .no-scroll {
-        overflow: hidden;
-        height: 100vh;
-    }
-
-    /* --- Modal de confirmation delete --- */
-    .modal-overlay {
-        position: fixed;
-        top: 0;
-        left: 0;
-        width: 100%;
-        height: 100%;
-        background: rgba(0, 0, 0, 0.5);
-        z-index: 3000;
-        display: none;
-        justify-content: center;
-        align-items: center;
-    }
-
-    .modal-open {
-        display: flex;
-    }
-
-    .modal-panel {
-        background: #fff;
-        padding: 30px;
-        border-radius: 10px;
-        box-shadow: 0 0 15px rgba(0, 0, 0, 0.2);
-        text-align: center;
-        width: 450px;
-    }
-
-    .modal-buttons {
-        display: flex;
-        justify-content: space-between;
-        margin-top: 20px;
-    }
-
-    .btn-cancel {
-        background: #ccc;
-    }
-
-    .btn-confirm {
-        background: #6c63ff;
-        color: white;
-    }
-
 </style>
