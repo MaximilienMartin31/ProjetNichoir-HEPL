@@ -1,5 +1,10 @@
 #include "M5TimerCAM.h"
-#include "base64.h"  // Assurez-vous d'avoir la bibliothèque base64.h pour l'encodage Base64
+#include "base64.h"
+
+struct ImageData {
+  uint8_t* buffer = nullptr;  // Pointeur vers les données JPEG (TimerCAM.Camera.fb->buf)
+  size_t size = 0;            // Taille de l'image (TimerCAM.Camera.fb->len)
+};
 
 
 class EspCamera {
@@ -15,12 +20,11 @@ public:
     }
     Serial.println("Camera Init Success");
 
-    // On dit à la caméra qu'on veut des images en JPEG
 
     sensor_t* s = TimerCAM.Camera.sensor;
     s->set_pixformat(s, PIXFORMAT_JPEG);
 
-    set2MP();
+    set3MP();
   }
 
 
@@ -53,23 +57,20 @@ public:
     s->set_hmirror(s, 1);  // on active le miroir horizontal
     Serial.println("Mode : miroir horizontal");
   }
-  String TakePicture() {
+
+  ImageData TakePicture() {
+    ImageData data;
+
+    // 1. Capture de l'image
     if (TimerCAM.Camera.get()) {
-      Serial.printf("Taille photo : %d octets\n", TimerCAM.Camera.fb->len);
+      data.size = TimerCAM.Camera.fb->len;
+      data.buffer = TimerCAM.Camera.fb->buf;
 
-      // Encoder l'image capturée en base64
-      String base64Image = base64::encode(TimerCAM.Camera.fb->buf, TimerCAM.Camera.fb->len);  // Encode l'image en base64
-
-      // Libérer la mémoire utilisée par l'image après l'encodage
-      TimerCAM.Camera.free();
-
-      // Retourner l'image encodée en base64
-      return base64Image;
+      Serial.printf("\n--- Capture reussie --- Taille: %d octets\n", data.size);
     } else {
-      Serial.println("Capture ratée");
+      Serial.println("Erreur de capture de la camera.");
     }
-
-    return "";
+    return data;
   }
   int GetBatteryLevel() {
     int battery = TimerCAM.Power.getBatteryLevel();

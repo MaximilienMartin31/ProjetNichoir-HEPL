@@ -1,0 +1,265 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Photo par album";
+    string defaultImg = "/assets/images/placeholder.jpg";
+
+}
+<div class="container mt-5">
+    <hr class="section-separator" />
+
+    <h2 class="text-center mb-4">
+        @(string.IsNullOrEmpty(ViewBag.Nom) ? "Photos de l'album" : ViewBag.Nom)
+    </h2>
+    @* Parcours des captures *@
+    <div class="album-grid">
+        @foreach (var item in Model.DernieresCaptures)
+        {
+            // 1. Extraction du nom de fichier et construction du style
+            var fileName = !string.IsNullOrEmpty(item.chemin_image) ? System.IO.Path.GetFileName(item.chemin_image) : null;
+            var imgPath = string.IsNullOrEmpty(fileName) ? defaultImg : $"/img/{fileName}";
+            var currentCardStyle = $"background-image: url('{imgPath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+
+            <div class="album-card image-bg selectable-card"
+                 style="@currentCardStyle"
+                 id="photo-@item.id_capture"
+                 data-date="@item.date_capture"
+                 data-battery="@item.batterie"
+                 data-resolution="@item.resolution"
+                 data-photo-id="@item.id_capture"
+                 tabindex="0"
+                 onclick="openPhotoModal(this);">
+                <!-- ouvre le modal -->
+                @* Bouton favori *@
+                <div class="actions">
+                    <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(@item.id_capture);">
+                        @if (item.favoris)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff4d4d" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-heart" viewBox="0 0 16 16" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));">
+                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                            </svg>
+                        }
+                    </button>
+                </div>
+
+                @* Overlay de sélection *@
+                <div class="selection-overlay">
+                    <i class="bi bi-check-circle-fill text-primary" style="font-size: 2.5rem; filter: drop-shadow(0 0 5px white);"></i>
+                </div>
+            </div>
+        }
+    </div>
+    <hr class="section-separator" />
+</div>
+
+<div id="photo-viewer-modal" class="photo-viewer-modal">
+
+    <div class="viewer-content">
+        <button id="prev-btn" class="nav-btn left" onclick="navigatePhoto(-1)">&#10094;</button>
+
+        <div class="image-details-master-container">
+
+            <div class="photo-viewer-box">
+                <img id="modal-photo" src="" alt="Photo en grand" class="main-photo" />
+            </div>
+
+            <button id="toggle-details-button" class="toggle-details-btn" onclick="toggleDetails()">
+                <span class="btn-text">Détails de la photo</span>
+                <span id="detail-arrow" class="arrow">&#9660;</span>
+            </button>
+
+            <div id="detail-panel" class="detail-panel">
+                <div class="detail-group">
+                    <div class="detail-item"><strong>ID Capture :</strong> <span id="detail-photo-id"></span></div>
+                    <div class="detail-item"><strong>Date :</strong> <span id="detail-date"></span></div>
+                </div>
+                <div class="detail-group">
+                    <div class="detail-item"><strong>Batterie :</strong> <span id="detail-battery"></span></div>
+                    <div class="detail-item"><strong>Résolution :</strong> <span id="detail-resolution"></span></div>
+                </div>
+                <div class="detail-item"><strong>Favoris :</strong> <span id="detail-favorite"></span></div>
+            </div>
+
+        </div>
+        <button id="next-btn" class="nav-btn right" onclick="navigatePhoto(1)">&#10095;</button>
+    </div>
+    <script>
+        // On initialise un tableau vide
+        let photoIds = [];
+
+        // Fonction pour scanner les photos réellement affichées à l'écran
+        function updatePhotoList() {
+            photoIds = Array.from(document.querySelectorAll('.album-card'))
+                            .map(card => card.id);
+        }
+
+        // -------------------------
+        // Logic to handle the favorite heart change
+        // -------------------------
+        function toggleFavorite(photoId) {
+            // On récupère le bouton qui contient le SVG
+            const btn = document.querySelector(`#photo-${photoId} .favorite-btn`);
+
+            // On définit les deux dessins SVG (Path)
+            const heartEmpty = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-heart" viewBox="0 0 16 16" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));"><path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/></svg>`;
+
+            const heartFull = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff4d4d" class="bi bi-heart-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>`;
+
+            // Logique de basculement
+            if (btn.innerHTML.includes("bi-heart-fill")) {
+                btn.innerHTML = heartEmpty;
+                console.log(`Photo ${photoId} retirée des favoris`);
+            } else {
+                btn.innerHTML = heartFull;
+                console.log(`Photo ${photoId} ajoutée aux favoris`);
+            }
+
+            const baseUrl = '@Url.Action("ToggleFavorite", "Home")';
+                fetch(`${baseUrl}/${photoId}`, { method: 'POST' });
+        }
+        // -------------------------
+        // Toggle individual photo selection logic (Function used by listeners)
+        // -------------------------
+        function handlePhotoClick() {
+            this.classList.toggle('selected');
+            this.blur();
+        }
+        // =========================================================
+        // FONCTIONS POUR LA MODALE (LIGHTBOX)
+        // =========================================================
+
+        function loadPhotoDetails(photoId) {
+            const card = document.getElementById(photoId);
+            if (!card) return;
+
+            const imageUrl = card.style.backgroundImage.slice(5, -2).replace(/"/g, "");
+            document.getElementById('modal-photo').src = imageUrl;
+            document.getElementById('modal-photo').alt = `Photo ${photoId.replace('photo-', '')}`;
+
+            document.getElementById('detail-photo-id').textContent = photoId.replace('photo-', '');
+            document.getElementById('detail-date').textContent = card.dataset.date;
+            document.getElementById('detail-battery').textContent = card.dataset.battery;
+            document.getElementById('detail-resolution').textContent = card.dataset.resolution;
+
+            const isFavorite = card.innerHTML.includes("bi-heart-fill");
+            document.getElementById('detail-favorite').textContent = isFavorite ? 'Oui' : 'Non';
+
+            // === AJOUTE CETTE LIGNE ===
+            document.getElementById('photo-viewer-modal').setAttribute('data-current-id', photoId);
+        }
+        function openModal() {
+            document.getElementById('photo-viewer-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('photo-viewer-modal').style.display = 'none';
+        }
+
+        function openPhotoModal(cardElement) {
+            if (cardElement.classList.contains('selection-active')) {
+                return;
+            }
+            const photoId = cardElement.id;
+            loadPhotoDetails(photoId);
+
+            const modal = document.getElementById('photo-viewer-modal');
+            modal.style.display = 'flex';
+            document.body.classList.add('modal-open-body');
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById('photo-viewer-modal');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open-body');
+            // S'assurer que le panneau de détails est replié
+            const detailPanel = document.getElementById('detail-panel');
+            detailPanel.classList.remove('open');
+            document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+        }
+
+        function navigatePhoto(direction) {
+            const modal = document.getElementById('photo-viewer-modal');
+            const currentId = modal.getAttribute('data-current-id');
+            const currentIndex = photoIds.indexOf(currentId);
+
+            let newIndex = currentIndex + direction;
+
+            if (newIndex >= 0 && newIndex < photoIds.length) {
+                loadPhotoDetails(photoIds[newIndex]);
+                // Replier les détails lors du changement de photo
+                const detailPanel = document.getElementById('detail-panel');
+                detailPanel.classList.remove('open');
+                document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+            }
+        }
+
+        // Basculer la section des détails (avec gestion du texte du bouton)
+        function toggleDetails() {
+            const detailPanel = document.getElementById('detail-panel');
+            const toggleBtn = document.getElementById('toggle-details-button');
+
+            detailPanel.classList.toggle('open');
+
+            const isOpen = detailPanel.classList.contains('open');
+            toggleBtn.querySelector('.btn-text').textContent = isOpen ? 'Masquer les détails' : 'Détails de la photo';
+        }
+               
+        function preparePhotoIds() {
+            const selectedCards = document.querySelectorAll('.album-card.selected');
+            const ids = Array.from(selectedCards).map(card => card.dataset.photoId);
+            document.getElementById('selectedPhotoIds').value = ids.join(',');
+        }
+              
+              
+        function submitFavorites() {
+            const selectedCards = document.querySelectorAll('.album-card.selected');
+            const ids = Array.from(selectedCards).map(card => card.dataset.photoId);
+
+            if (ids.length === 0) {
+                alert("Veuillez sélectionner au moins une photo.");
+                return;
+            }
+
+            // On place les IDs dans le champ caché du nouveau formulaire
+            document.getElementById('favoritesPhotoIds').value = ids.join(',');
+
+            // On soumet le formulaire
+            document.getElementById('form-bulk-favorites').submit();
+        }
+                
+        // -------------------------
+        // Initialisation
+        // -------------------------
+        document.addEventListener("DOMContentLoaded", () => {
+
+            updatePhotoList(); // <--- AJOUTER CETTE LIGNE ICI
+            toggleDateFilters();
+            document.getElementById('selection-management').style.display = 'none';
+
+            // Rendre les cartes cliquables pour ouvrir la modale
+            document.querySelectorAll('.album-card.selectable-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!this.classList.contains('selection-active')) {
+                        openPhotoModal(this);
+                    }
+                });
+            });
+
+            // Fermeture de la modale en cliquant en dehors du contenu principal
+            const modal = document.getElementById('photo-viewer-modal');
+
+            modal.addEventListener('click', function(e) {
+                // Si l'élément cliqué est la modale elle-même (l'arrière-plan)
+                if (e.target === modal) {
+                    closePhotoModal();
+                }
+            });
+        });
+    </script>
+
+</div>

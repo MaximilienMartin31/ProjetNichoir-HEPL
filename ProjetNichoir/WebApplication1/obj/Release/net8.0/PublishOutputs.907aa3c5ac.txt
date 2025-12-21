@@ -1,0 +1,12 @@
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\WebApplication1.exe
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\appsettings.Development.json
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\appsettings.json
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\WebApplication1.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\WebApplication1.runtimeconfig.json
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\WebApplication1.pdb
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.Abstractions.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\Microsoft.EntityFrameworkCore.Relational.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\MySqlConnector.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\Pomelo.EntityFrameworkCore.MySql.dll
+C:\ProjetNichoir\ProjetNichoir\WebApplication1\obj\Release\net8.0\PubTmp\Out\WebApplication1.deps.json

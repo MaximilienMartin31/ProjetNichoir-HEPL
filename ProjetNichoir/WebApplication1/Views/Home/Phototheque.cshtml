@@ -1,0 +1,491 @@
+@model HomeViewModel
+@{
+    ViewData["Title"] = "Photothèque";
+    string defaultImg = "/assets/images/placeholder.jpg";
+
+}
+<div class="container mt-5">
+    <hr class="section-separator" />
+
+    <h2 class="text-center mb-4">Photothèque</h2>
+
+    <div class="management-zone">
+
+        <button id="select-button" class="btn btn-primary management-btn" onclick="toggleSelectionMode(true)">
+            Sélectionner
+        </button>
+
+        <form id="filter-bar" class="filter-bar"
+              asp-action="Phototheque" asp-controller="Home" method="get">
+
+            <div class="filter-group">
+                <label for="filter-type">Affichage :</label>
+                <select id="filter-type" name="type" class="filter-select" onchange="toggleDateFilters()">
+                    <option value="all" selected="@(ViewBag.FilterType == "all")">Tous</option>
+                    <option value="favorites" selected="@(ViewBag.FilterType == "favorites")">Favoris</option>
+                    <option value="date_mode" selected="@(ViewBag.FilterType == "date_mode")">Date (Précise ou Plage)</option>
+                </select>
+            </div>
+
+            <div id="date-selection-group" class="date-selection-group">
+                <div class="filter-group">
+                    <label for="date-range-mode">Type de recherche :</label>
+                    <select id="date-range-mode" name="mode" class="filter-select" onchange="toggleRangeInputs()">
+                        <option value="precise" selected="@(ViewBag.FilterMode == "precise")">
+                            Date précise
+                        </option>
+                        <option value="range" selected="@(ViewBag.FilterMode == "range")">
+                            Plage de date
+                        </option>
+                    </select>
+                </div>
+
+                <div class="filter-group" id="precise-date-input">
+                    <input type="date"
+                           id="filter-date"
+                           name="date"
+                           class="filter-input"
+                           value="@ViewBag.FilterDate" />
+                </div>
+
+                <div class="filter-group" id="range-date-inputs" style="display: none;">
+                    <input type="date"
+                           id="filter-date-start"
+                           name="start"
+                           class="filter-input"
+                           value="@ViewBag.FilterStart" />
+                    <input type="date"
+                           id="filter-date-end"
+                           name="end"
+                           class="filter-input"
+                           value="@ViewBag.FilterEnd" />
+                </div>
+            </div>
+
+            <div class="filter-group" style="margin-left:auto;">
+                <button type="submit" class="btn-confirm">Filtrer</button>
+            </div>
+
+        </form>
+
+
+        <div id="selection-management" class="selection-management-bar">
+
+            <button id="cancel-button" class="btn btn-secondary management-btn" onclick="toggleSelectionMode(false)">
+                Annuler
+            </button>
+
+            <div class="dropdown">
+                <button id="action-button" class="btn btn-action management-btn dropdown-toggle">
+                    <span class="dots">•••</span>
+                </button>
+                <div class="dropdown-content">
+                    <a href="#" onclick="openAlbumDrawer();">Ajouter à un album</a>
+                    <a href="javascript:void(0)" onclick="submitFavorites()">Ajouter aux favoris</a>
+                    <a href="javascript:void(0)" onclick="submitDeleteSelection()">Supprimer la sélection</a>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <div id="drawer-album" class="drawer-overlay">
+        <div class="drawer-panel">
+
+            <h2>Ajouter à un album</h2>
+
+
+            <form class="album-form" asp-action="AddToAlbum" asp-controller="Home" method="post">
+
+                <label>Choisir un album</label>
+                <select name="albumId" required>
+                    <option value="">-- Sélectionner un album --</option>
+                    @foreach (var album in Model.Albums)
+                    {
+                        <option value="@album.id_album">@album.nom</option>
+                    }
+                </select>
+
+                <input type="hidden" id="selectedPhotoIds" name="selectedPhotoIds" />
+
+                <div class="drawer-buttons">
+                    <button type="button" class="btn-cancel" onclick="closeFormAlbum()">Annuler</button>
+                    <button type="submit" class="btn-confirm" onclick="preparePhotoIds()">Ajouter</button>
+                </div>
+            </form>
+            <form id="form-bulk-favorites" asp-action="AddFavoritesBulk" asp-controller="Home" method="post" style="display:none;">
+                <input type="hidden" id="favoritesPhotoIds" name="selectedPhotoIds" />
+            </form>
+            <form id="form-bulk-delete" asp-action="DeletePhotosBulk" asp-controller="Home" method="post" style="display:none;">
+                <input type="hidden" id="deletePhotoIds" name="selectedPhotoIds" />
+            </form>
+
+        </div>
+    </div>
+    @* Parcours des captures *@
+    <div class="album-grid">
+        @foreach (var item in Model.DernieresCaptures)
+        {
+            // 1. Extraction du nom de fichier et construction du style
+            var fileName = !string.IsNullOrEmpty(item.chemin_image) ? System.IO.Path.GetFileName(item.chemin_image) : null;
+            var imgPath = string.IsNullOrEmpty(fileName) ? defaultImg : $"/img/{fileName}";
+            var currentCardStyle = $"background-image: url('{imgPath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+
+            <div class="album-card image-bg selectable-card"
+                 style="@currentCardStyle"
+                 id="photo-@item.id_capture"
+                 data-date="@item.date_capture"
+                 data-battery="@item.batterie"
+                 data-resolution="@item.resolution"
+                 data-photo-id="@item.id_capture"
+                 tabindex="0"
+                 onclick="openPhotoModal(this);">
+                <!-- ouvre le modal -->
+                @* Bouton favori *@
+                <div class="actions">
+                    <button class="favorite-btn" onclick="event.stopPropagation(); toggleFavorite(@item.id_capture);">
+                        @if (item.favoris)
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff4d4d" class="bi bi-heart-fill" viewBox="0 0 16 16">
+                                <path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z" />
+                            </svg>
+                        }
+                        else
+                        {
+                            <svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-heart" viewBox="0 0 16 16" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));">
+                                <path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z" />
+                            </svg>
+                        }
+                    </button>
+                </div>
+
+                @* Overlay de sélection *@
+                <div class="selection-overlay">
+                    <i class="bi bi-check-circle-fill text-primary" style="font-size: 2.5rem; filter: drop-shadow(0 0 5px white);"></i>
+                </div>
+            </div>
+        }
+    </div>
+    <hr class="section-separator" />
+</div>
+
+<div id="photo-viewer-modal" class="photo-viewer-modal">
+
+    <div class="viewer-content">
+        <button id="prev-btn" class="nav-btn left" onclick="navigatePhoto(-1)">&#10094;</button>
+
+        <div class="image-details-master-container">
+
+            <div class="photo-viewer-box">
+                <img id="modal-photo" src="" alt="Photo en grand" class="main-photo" />
+            </div>
+
+            <button id="toggle-details-button" class="toggle-details-btn" onclick="toggleDetails()">
+                <span class="btn-text">Détails de la photo</span>
+                <span id="detail-arrow" class="arrow">&#9660;</span>
+            </button>
+
+            <div id="detail-panel" class="detail-panel">
+                <div class="detail-group">
+                    <div class="detail-item"><strong>ID Capture :</strong> <span id="detail-photo-id"></span></div>
+                    <div class="detail-item"><strong>Date :</strong> <span id="detail-date"></span></div>
+                </div>
+                <div class="detail-group">
+                    <div class="detail-item"><strong>Batterie :</strong> <span id="detail-battery"></span></div>
+                    <div class="detail-item"><strong>Résolution :</strong> <span id="detail-resolution"></span></div>
+                </div>
+                <div class="detail-item"><strong>Favoris :</strong> <span id="detail-favorite"></span></div>
+            </div>
+
+        </div>
+        <button id="next-btn" class="nav-btn right" onclick="navigatePhoto(1)">&#10095;</button>
+    </div>
+    <script>
+        // On initialise un tableau vide
+        let photoIds = [];
+
+        // Fonction pour scanner les photos réellement affichées à l'écran
+        function updatePhotoList() {
+            photoIds = Array.from(document.querySelectorAll('.album-card'))
+                            .map(card => card.id);
+        }
+
+        // -------------------------
+        // Logic to handle the favorite heart change
+        // -------------------------
+        function toggleFavorite(photoId) {
+            // On récupère le bouton qui contient le SVG
+            const btn = document.querySelector(`#photo-${photoId} .favorite-btn`);
+
+            // On définit les deux dessins SVG (Path)
+            const heartEmpty = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="white" class="bi bi-heart" viewBox="0 0 16 16" style="filter: drop-shadow(0 0 2px rgba(0,0,0,0.8));"><path d="m8 2.748-.717-.737C5.6.281 2.514.878 1.4 3.053c-.523 1.023-.641 2.5.314 4.385.92 1.815 2.834 3.989 6.286 6.357 3.452-2.368 5.365-4.542 6.286-6.357.955-1.886.838-3.362.314-4.385C13.486.878 10.4.28 8.717 2.01L8 2.748zM8 15C-7.333 4.868 3.279-3.04 7.824 1.143c.06.055.119.112.176.171a3.12 3.12 0 0 1 .176-.17C12.72-3.042 23.333 4.867 8 15z"/></svg>`;
+
+            const heartFull = `<svg xmlns="http://www.w3.org/2000/svg" width="20" height="20" fill="#ff4d4d" class="bi bi-heart-fill" viewBox="0 0 16 16"><path fill-rule="evenodd" d="M8 1.314C12.438-3.248 23.534 4.735 8 15-7.534 4.736 3.562-3.248 8 1.314z"/></svg>`;
+
+            // Logique de basculement
+            if (btn.innerHTML.includes("bi-heart-fill")) {
+                btn.innerHTML = heartEmpty;
+                console.log(`Photo ${photoId} retirée des favoris`);
+            } else {
+                btn.innerHTML = heartFull;
+                console.log(`Photo ${photoId} ajoutée aux favoris`);
+            }
+
+            const baseUrl = '@Url.Action("ToggleFavorite", "Home")';
+                fetch(`${baseUrl}/${photoId}`, { method: 'POST' });
+        }
+
+        // -------------------------
+        // Toggle Visibility of Date Inputs (Precise vs Range)
+        // -------------------------
+        function toggleRangeInputs() {
+            const mode = document.getElementById('date-range-mode').value;
+            const preciseInput = document.getElementById('precise-date-input');
+            const rangeInputs = document.getElementById('range-date-inputs');
+
+            if (mode === 'precise') {
+                preciseInput.style.display = 'flex';
+                rangeInputs.style.display = 'none';
+            } else {
+                preciseInput.style.display = 'none';
+                rangeInputs.style.display = 'flex';
+            }
+        }
+
+        // -------------------------
+        // Toggle Visibility of ALL Date Filters
+        // -------------------------
+        function toggleDateFilters() {
+            const filterType = document.getElementById('filter-type').value;
+            const dateGroup = document.getElementById('date-selection-group');
+
+            if (filterType === 'date_mode') {
+                dateGroup.style.display = 'flex';
+                toggleRangeInputs();
+            } else {
+                dateGroup.style.display = 'none';
+            }
+        }
+
+        // -------------------------
+        // Toggle individual photo selection logic (Function used by listeners)
+        // -------------------------
+        function handlePhotoClick() {
+            this.classList.toggle('selected');
+            this.blur();
+        }
+
+        // -------------------------
+        // Add listeners to enable selection mode
+        // -------------------------
+        function addSelectionListeners() {
+            const selectableCards = document.querySelectorAll('.selectable-card');
+            selectableCards.forEach(card => {
+                card.classList.add('selection-active');
+                card.addEventListener('click', handlePhotoClick);
+            });
+        }
+
+        // -------------------------
+        // Remove listeners to disable selection mode
+        // -------------------------
+        function removeSelectionListeners() {
+            const selectableCards = document.querySelectorAll('.selectable-card');
+            selectableCards.forEach(card => {
+                card.classList.remove('selection-active');
+                card.classList.remove('selected');
+                card.removeEventListener('click', handlePhotoClick);
+            });
+        }
+
+        // -------------------------
+        // Toggle Selection Mode (Visual and Functional)
+        // -------------------------
+        function toggleSelectionMode(activate) {
+            const filterBar = document.getElementById('filter-bar');
+            const selectionBar = document.getElementById('selection-management');
+            const selectButton = document.getElementById('select-button');
+
+            if (activate) {
+                filterBar.style.display = 'none';
+                selectButton.style.display = 'none';
+                selectionBar.style.display = 'flex';
+
+                addSelectionListeners();
+
+            } else {
+                filterBar.style.display = 'flex';
+                selectButton.style.display = 'inline-block';
+                selectionBar.style.display = 'none';
+
+                removeSelectionListeners();
+            }
+        }
+
+        // =========================================================
+        // FONCTIONS POUR LA MODALE (LIGHTBOX)
+        // =========================================================
+
+        function loadPhotoDetails(photoId) {
+            const card = document.getElementById(photoId);
+            if (!card) return;
+
+            const imageUrl = card.style.backgroundImage.slice(5, -2).replace(/"/g, "");
+            document.getElementById('modal-photo').src = imageUrl;
+            document.getElementById('modal-photo').alt = `Photo ${photoId.replace('photo-', '')}`;
+
+            document.getElementById('detail-photo-id').textContent = photoId.replace('photo-', '');
+            document.getElementById('detail-date').textContent = card.dataset.date;
+            document.getElementById('detail-battery').textContent = card.dataset.battery;
+            document.getElementById('detail-resolution').textContent = card.dataset.resolution;
+
+            const isFavorite = card.innerHTML.includes("bi-heart-fill");
+            document.getElementById('detail-favorite').textContent = isFavorite ? 'Oui' : 'Non';
+
+            // === AJOUTE CETTE LIGNE ===
+            document.getElementById('photo-viewer-modal').setAttribute('data-current-id', photoId);
+        }
+        function openModal() {
+            document.getElementById('photo-viewer-modal').style.display = 'block';
+        }
+
+        function closeModal() {
+            document.getElementById('photo-viewer-modal').style.display = 'none';
+        }
+
+        function openPhotoModal(cardElement) {
+            if (cardElement.classList.contains('selection-active')) {
+                return;
+            }
+            const photoId = cardElement.id;
+            loadPhotoDetails(photoId);
+
+            const modal = document.getElementById('photo-viewer-modal');
+            modal.style.display = 'flex';
+            document.body.classList.add('modal-open-body');
+        }
+
+        function closePhotoModal() {
+            const modal = document.getElementById('photo-viewer-modal');
+            modal.style.display = 'none';
+            document.body.classList.remove('modal-open-body');
+            // S'assurer que le panneau de détails est replié
+            const detailPanel = document.getElementById('detail-panel');
+            detailPanel.classList.remove('open');
+            document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+        }
+
+        function navigatePhoto(direction) {
+            const modal = document.getElementById('photo-viewer-modal');
+            const currentId = modal.getAttribute('data-current-id');
+            const currentIndex = photoIds.indexOf(currentId);
+
+            let newIndex = currentIndex + direction;
+
+            if (newIndex >= 0 && newIndex < photoIds.length) {
+                loadPhotoDetails(photoIds[newIndex]);
+                // Replier les détails lors du changement de photo
+                const detailPanel = document.getElementById('detail-panel');
+                detailPanel.classList.remove('open');
+                document.getElementById('toggle-details-button').querySelector('.btn-text').textContent = 'Détails de la photo';
+            }
+        }
+
+        // Basculer la section des détails (avec gestion du texte du bouton)
+        function toggleDetails() {
+            const detailPanel = document.getElementById('detail-panel');
+            const toggleBtn = document.getElementById('toggle-details-button');
+
+            detailPanel.classList.toggle('open');
+
+            const isOpen = detailPanel.classList.contains('open');
+            toggleBtn.querySelector('.btn-text').textContent = isOpen ? 'Masquer les détails' : 'Détails de la photo';
+        }
+               
+        function preparePhotoIds() {
+            const selectedCards = document.querySelectorAll('.album-card.selected');
+            const ids = Array.from(selectedCards).map(card => card.dataset.photoId);
+            document.getElementById('selectedPhotoIds').value = ids.join(',');
+        }
+              
+        function openAlbumDrawer() {
+            const drawer = document.getElementById('drawer-album');
+            // On utilise la classe comme dans votre ancien code
+            drawer.classList.add("drawer-open");
+            document.body.classList.add("no-scroll");
+        }
+
+           
+        function closeFormAlbum() {
+            const drawer = document.getElementById('drawer-album');
+            drawer.classList.remove("drawer-open");
+            document.body.classList.remove("no-scroll");
+        }
+               
+        function submitFavorites() {
+            const selectedCards = document.querySelectorAll('.album-card.selected');
+            const ids = Array.from(selectedCards).map(card => card.dataset.photoId);
+
+            if (ids.length === 0) {
+                alert("Veuillez sélectionner au moins une photo.");
+                return;
+            }
+
+            // On place les IDs dans le champ caché du nouveau formulaire
+            document.getElementById('favoritesPhotoIds').value = ids.join(',');
+
+            // On soumet le formulaire
+            document.getElementById('form-bulk-favorites').submit();
+        }
+                
+        function submitDeleteSelection() {
+            const selectedCards = document.querySelectorAll('.album-card.selected');
+            const ids = Array.from(selectedCards).map(card => card.dataset.photoId);
+
+            if (ids.length === 0) {
+                alert("Veuillez sélectionner au moins une photo.");
+                return;
+            }
+
+            // Confirmation de sécurité
+            const message = ids.length > 1
+                ? `Êtes-vous sûr de vouloir supprimer ces ${ids.length} photos ?`
+                : "Êtes-vous sûr de vouloir supprimer cette photo ?";
+
+            if (confirm(message)) {
+                document.getElementById('deletePhotoIds').value = ids.join(',');
+                document.getElementById('form-bulk-delete').submit();
+            }
+        }
+
+
+        // -------------------------
+        // Initialisation
+        // -------------------------
+        document.addEventListener("DOMContentLoaded", () => {
+
+            updatePhotoList(); // <--- AJOUTER CETTE LIGNE ICI
+            toggleDateFilters();
+            document.getElementById('selection-management').style.display = 'none';
+
+            // Rendre les cartes cliquables pour ouvrir la modale
+            document.querySelectorAll('.album-card.selectable-card').forEach(card => {
+                card.addEventListener('click', function(e) {
+                    if (!this.classList.contains('selection-active')) {
+                        openPhotoModal(this);
+                    }
+                });
+            });
+
+            // Fermeture de la modale en cliquant en dehors du contenu principal
+            const modal = document.getElementById('photo-viewer-modal');
+
+            modal.addEventListener('click', function(e) {
+                // Si l'élément cliqué est la modale elle-même (l'arrière-plan)
+                if (e.target === modal) {
+                    closePhotoModal();
+                }
+            });
+        });
+    </script>
+
+</div>
