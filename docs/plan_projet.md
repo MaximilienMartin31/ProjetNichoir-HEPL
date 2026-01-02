@@ -12,33 +12,30 @@
 
 ## 2. Périmètre du projet
 
-- Matériel : ESP32 Timer-Cam M5Stack, PIR, LED IR, batterie, Raspberry Pi, PCB, nichoir 3D.
+- Matériel : ESP32 Timer-Cam M5Stack, PIR, LED IR, batterie, Raspberry Pi, PCB, nichoir en bois, fixation imprimée en 3D.
 - Logiciel embarqué : Arduino (C) sur ESP32.
 - Backend : Python sur Raspberry Pi (MQTT + DB).
 - BDD : MariaDB (modélisation, création, scripts).
-- Web : site simple (Flask recommandé) pour galerie + stats batterie.
-- Électronique : PCB sous Eagle, intégration dans nichoir imprimé 3D.
+- Web : site simple (Flask) pour galerie + stats batterie.
+- Électronique : PCB sous Eagle / Altium, intégration dans le nichoir en bois via fixation imprimée en 3D.
 
 ## 3. Architecture globale (résumé)
 
 - ESP32 Timer-Cam :
-  - États : CONFIG_AP, NORMAL_SLEEP, CAPTURE_EVENT.
+  - États : NORMAL_SLEEP, CAPTURE_EVENT.
   - Lecture batterie (ADC), PIR, LED IR, caméra, WiFi + MQTT.
 - Raspberry Pi :
   - Broker MQTT (Mosquitto).
   - Script Python listener (Paho MQTT) → fichiers images + inserts DB.
 - Base de données :
-  - Table `nichoirs` / `appareils`.
   - Table `captures` (timestamp, chemin image, niveau_batterie, type_event…).
 - Site Web :
-  - Page d’accueil : liste des nichoirs + dernière capture + état batterie.
-  - Page galerie : toutes les captures d’un nichoir.
-  - Page détail : image + infos.
+  - Page d’accueil : possibilité de prendre des photos à distance via le site web. 
+  - Page galerie : toutes les captures d’un nichoir avec des filtres (dates, plages de jours) + infos.
 
-## 4. Gestion de la batterie
+## 4. Gestion de la batterie 
 
-- Type de batterie choisi : …
-- Schéma de mesure : pont diviseur → ADC ESP32.
+- Type de batterie choisi : Lipo
 - Stratégie d’économie :
   - Deep sleep la majorité du temps.
   - Réveil par PIR (présence) et par timer (heartbeat batterie).
@@ -51,26 +48,25 @@
 ## 5. Organisation du travail
 
 - Binôme :
-  - A.S. : ESP32, batterie, MQTT côté ESP, PCB…
-  - A.A. : Raspberry Pi, DB, site web, 3D…
+  - Gestion en duo de chaque tâche.
 - Gestion de version :
-  - Branches Git : `main`, `Maximilien`, branche de ton binôme.
+  - Branches Git : `main`, `Maximilien`, `Mohammed`.
   - Revue avant merge sur `main`.
 
 ## 6. Planning par semaine
 
-- Semaine 1 : environnement, schéma bloc, modélisation BDD, test caméra.
-- Semaine 2 : MQTT simple + DB + lecture batterie.
-- Semaine 3 : envoi images + site web de base.
-- Semaine 4 : deep sleep + optimisation batterie + PCB + 3D.
-- Semaine 5 : intégration nichoir + tests + refacto + rapport.
+- Semaine 1 : 
+- Semaine 2 : 
+- Semaine 3 : 
+- Semaine 4 : 
+- Semaine 5 : 
 
 ## 7. Livrables
 
 - Code ESP32 propre et commenté.
 - Script MQTT + DB sur Raspberry Pi.
 - Base de données MariaDB créée (script SQL).
-- Site Web minimal fonctionnel.
-- PCB Eagle + éventuellement carte soudée.
-- Nichoir imprimé 3D avec intégration des composants.
+- Site Web fonctionnel.
+- PCB Eagle / Altium + composants soudés.
+- Nichoir en bois (donné) + Support de fixation imprimé en 3D.
 - Rapport final + présentation.
