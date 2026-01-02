@@ -1,0 +1,370 @@
+﻿@model HomeViewModel
+@{
+    ViewData["Title"] = "Accueil";
+    string defaultImg = "/assets/images/placeholder.jpg";
+}
+
+<div class="container mt-5">
+    <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+
+    <hr class="section-separator" />
+    <h2 class="text-center mb-4">Photothèque</h2>
+    <div class="album-grid">
+        @foreach (var capture in Model.DernieresCaptures)
+        {
+            var fileName = !string.IsNullOrEmpty(capture.chemin_image) ? System.IO.Path.GetFileName(capture.chemin_image) : null;
+
+            var imgPath = string.IsNullOrEmpty(fileName) ? defaultImg : $"/img/{fileName}";
+
+            var currentCardStyle = $"background-image: url('{imgPath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+
+            <div class="album-card image-bg selectable-card"
+                 style="@currentCardStyle"
+                 id="photo-@capture.id_capture"
+                 data-date="@capture.date_capture"
+                 data-battery="@capture.batterie"
+                 data-resolution="@capture.resolution"
+                 data-photo-id="@capture.id_capture"
+                 onclick="openPhotoModal(this);">
+            </div>
+        }
+
+        <div id="photo-viewer-modal" class="photo-viewer-modal">
+            <div class="viewer-content">
+                <button id="prev-btn" class="nav-btn left" onclick="navigatePhoto(-1)">&#10094;</button>
+
+                <div class="image-details-master-container">
+                    <div class="photo-viewer-box">
+                        <img id="modal-photo" src="" alt="Photo" class="main-photo" />
+                    </div>
+
+                    <button id="toggle-details-button" class="toggle-details-btn" onclick="toggleDetails()">
+                        <span class="btn-text">Détails de la photo</span>
+                        <span id="detail-arrow" class="arrow">&#9660;</span>
+                    </button>
+
+                    <div id="detail-panel" class="detail-panel">
+                        <div class="detail-group">
+                            <div class="detail-item"><strong>ID :</strong> <span id="detail-photo-id"></span></div>
+                            <div class="detail-item"><strong>Date :</strong> <span id="detail-date"></span></div>
+                        </div>
+                        <div class="detail-group">
+                            <div class="detail-item"><strong>Batterie :</strong> <span id="detail-battery"></span></div>
+                            <div class="detail-item"><strong>Résolution :</strong> <span id="detail-resolution"></span></div>
+                        </div>
+                        <div class="detail-item"><strong>Favoris :</strong> <span id="detail-favorite"></span></div>
+                    </div>
+                </div>
+
+                <button id="next-btn" class="nav-btn right" onclick="navigatePhoto(1)">&#10095;</button>
+            </div>
+        </div>
+
+        @* 2. CARTE MOSAÏQUE (Fixe à la fin) *@
+        <div class="album-card see-all-card" onclick="window.open('@Url.Action("Phototheque", "Home")', '_blank')">
+            <div class="mosaic-grid">
+                @foreach (var cap in Model.DernieresCaptures.Take(4))
+                {
+                    var fName = System.IO.Path.GetFileName(cap.chemin_image);
+                    <div class="mosaic-item" style="background-image: url('/img/@fName');"></div>
+                }
+            </div>
+            <span class="see-all-text">Voir toutes les photos</span>
+        </div>
+    </div>
+
+    <hr class="section-separator" />
+
+    <h2 class="text-center mb-4">Albums</h2>
+
+    <div class="album-grid">
+        @foreach (var item in Model.Albums)
+        {
+
+            <div class="album-card"
+                 onclick="window.open('@Url.Action("PhotosParAlbum", "Home", new { id = item.id_album })', '_blank')"
+                 style="cursor: pointer;">
+
+                <span>@item.nom</span>
+
+                <div class="actions">
+                    <button class="edit-btn" onclick="event.stopPropagation(); openEditDrawer('@item.nom', @item.id_album)">
+                        <i class="bi bi-pencil"></i>
+                    </button>
+
+                    <button class="delete-btn text-danger" onclick="event.stopPropagation(); openDeleteModal('@item.nom', @item.id_album)">
+                        <i class="bi bi-trash"></i>
+                    </button>
+                </div>
+            </div>
+        }
+        <div class="album-card add-card" onclick="openFormAlbum()">
+            <span class="plus">+</span>
+        </div>
+    </div>
+    <hr class="section-separator" />
+
+    <h2 class="text-center mb-4">Favoris</h2>
+
+    <div class="album-grid">
+        @* Cartes Favoris avec image en background (4 pour l'exemple) *@
+        @foreach (var item in Model.Favoris)
+        {
+            // On nettoie le chemin pour le pont Windows /MesTelechargements
+            var fileName = !string.IsNullOrEmpty(item.chemin_image) ? System.IO.Path.GetFileName(item.chemin_image) : null;
+
+            var imgPath = string.IsNullOrEmpty(fileName) ? defaultImg : $"/img/{fileName}";
+
+            var currentCardStyle = $"background-image: url('{imgPath}'); background-size: cover; background-position: center; background-color: transparent; color: white; text-shadow: 0 0 5px rgba(0, 0, 0, 0.75);";
+
+            <div class="album-card image-bg selectable-card"
+                 style="@currentCardStyle"
+                 id="fav-@item.id_capture"
+                 data-date="@item.date_capture"
+                 data-battery="@item.batterie"
+                 data-resolution="@item.resolution"
+                 data-photo-id="@item.id_capture"
+                 onclick="openPhotoModal(this);">
+            </div>
+        }
+
+
+
+        @* CARTE MOSAÏQUE : VOIR TOUS LES FAVORIS *@
+        <div class="album-card see-all-card" onclick="window.open('@Url.Action("Photofavoris", "Home")', '_blank')">
+            <div class="mosaic-grid">
+                @foreach (var item in Model.Favoris.Take(4))
+                {
+                    var fName = System.IO.Path.GetFileName(item.chemin_image);
+                    <div class="mosaic-item" style="background-image: url('/img/@fName');"></div>
+
+
+                }
+            </div>
+            <span class="see-all-text">Voir tous les favoris</span>
+        </div>
+    </div>
+</div>
+
+<div id="drawer-album" class="drawer-overlay">
+    <div class="drawer-panel">
+
+        <h2>Créer un album</h2>
+
+        <form class="album-form" asp-action="CreateAlbum" asp-controller="Home" method="post">
+            <label>Nom de l'album</label>
+            <input type="text" name="nom" required placeholder="Ex : Vacances oiseaux">
+
+            <div class="drawer-buttons">
+                <button type="button" class="btn-cancel" onclick="closeFormAlbum()">Annuler</button>
+                <button type="submit" class="btn-confirm">Créer</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+
+<div id="delete-modal" class="modal-overlay">
+    <div class="modal-panel">
+        <h2>Êtes-vous sûr de vouloir supprimer cet album ?</h2>
+        <p id="delete-album-name"></p>
+
+        <form asp-action="DeleteAlbum" asp-controller="Home" method="post">
+            <input type="hidden" id="delete-album-id" name="id" />
+
+            <div class="modal-buttons">
+                <button type="button" class="btn-cancel" onclick="closeDeleteModal()">Annuler</button>
+                <button type="submit" class="btn-confirm">Confirmer</button>
+            </div>
+        </form>
+    </div>
+</div>
+
+<div id="drawer-edit" class="drawer-overlay">
+    <div class="drawer-panel">
+
+        <h2>Éditer un album</h2>
+
+        <form class="album-form" asp-action="EditAlbum">
+            <label>Nom de l'album</label>
+            <input id="edit-album-name" type="text" required placeholder="Nom de l'album" name="nom">
+            <input id="edit-album-id" type="hidden" required name="id">
+            <div class="drawer-buttons">
+                <button type="button" class="btn-cancel" onclick="closeEditDrawer()">Annuler</button>
+                <button type="submit" class="btn-confirm">Sauvegarder</button>
+            </div>
+        </form>
+
+    </div>
+</div>
+<script>
+    // -------------------------
+    // Drawer Album
+    // -------------------------
+    function openFormAlbum() {
+        const drawer = document.getElementById("drawer-album");
+        drawer.classList.add("drawer-open");
+        document.body.classList.add("no-scroll");
+    }
+
+    function closeFormAlbum() {
+        const drawer = document.getElementById("drawer-album");
+        drawer.classList.remove("drawer-open");
+        document.body.classList.remove("no-scroll");
+    }
+
+    // -------------------------
+    // Drawer Edit Album
+    // -------------------------
+    function openEditDrawer(albumName,id) {
+        const drawerEdit = document.getElementById("drawer-edit");
+        drawerEdit.classList.add("drawer-open");
+        document.body.classList.add("no-scroll");
+        document.getElementById("edit-album-name").value = albumName; // Pre-fill input with album name
+        document.getElementById("edit-album-id").value = id; // Pre-fill input with album name
+
+    }
+
+    function closeEditDrawer() {
+        const drawerEdit = document.getElementById("drawer-edit");
+        drawerEdit.classList.remove("drawer-open");
+        document.body.classList.remove("no-scroll");
+    }
+
+    // -------------------------
+    // Modal Delete Confirmation
+    // -------------------------
+    function openDeleteModal(albumName , id) {
+        document.getElementById("delete-modal").classList.add("modal-open");
+        document.getElementById("delete-album-name").innerText = albumName;
+        document.getElementById("delete-album-id").value = id; 
+    }
+
+    function closeDeleteModal() {
+        document.getElementById("delete-modal").classList.remove("modal-open");
+    }
+        // Scanne les photos affichées pour la navigation
+
+
+
+
+    // --- VARIABLES GLOBALES ---
+    let photoIds = [];
+
+    // --- FONCTIONS DE NAVIGATION ---
+    function updatePhotoList() {
+        // On ne récupère que les cartes qui ont la classe 'selectable-card'
+        photoIds = Array.from(document.querySelectorAll('.selectable-card'))
+                        .map(card => card.id);
+    }
+
+    function navigatePhoto(direction) {
+        const modal = document.getElementById('photo-viewer-modal');
+        const currentId = modal.getAttribute('data-current-id');
+        const currentIndex = photoIds.indexOf(currentId);
+
+        let newIndex = currentIndex + direction;
+
+        // Gestion du bouclage (optionnel)
+        if (newIndex < 0) newIndex = photoIds.length - 1;
+        if (newIndex >= photoIds.length) newIndex = 0;
+
+        const newPhotoId = photoIds[newIndex];
+        loadPhotoDetails(newPhotoId);
+
+        // On referme les détails lors du passage à la photo suivante pour plus de fluidité
+        const detailPanel = document.getElementById('detail-panel');
+        if (detailPanel) detailPanel.classList.remove('open');
+    }
+
+    // --- FONCTION DÉTAILS ---
+    function toggleDetails() {
+        const panel = document.getElementById('detail-panel');
+        const arrow = document.getElementById('detail-arrow');
+
+        if (panel.style.display === "block") {
+            panel.style.display = "none";
+            arrow.innerHTML = "&#9660;"; // Flèche bas
+        } else {
+            panel.style.display = "block";
+            arrow.innerHTML = "&#9650;"; // Flèche haut
+        }
+    }
+
+    // --- FONCTIONS MODAL ---
+    function openPhotoModal(cardElement) {
+        updatePhotoList();
+        const photoId = cardElement.id;
+        loadPhotoDetails(photoId);
+
+        const modal = document.getElementById('photo-viewer-modal');
+        modal.style.display = 'flex';
+        document.body.style.overflow = 'hidden';
+    }
+
+    // --- FONCTION DÉTAILS ---
+    function toggleDetails() {
+        const panel = document.getElementById('detail-panel');
+        const btn = document.getElementById('toggle-details-button');
+        const arrow = document.getElementById('detail-arrow');
+
+        // On bascule la classe .open
+        panel.classList.toggle('open');
+
+        // Animation de la flèche
+        if (panel.classList.contains('open')) {
+            arrow.style.transform = "rotate(180deg)";
+        } else {
+            arrow.style.transform = "rotate(0deg)";
+        }
+    }
+
+    // --- CHARGEMENT DES DONNÉES ---
+    function loadPhotoDetails(photoId) {
+        const card = document.getElementById(photoId);
+        if (!card) return;
+
+        // ... (votre code existant pour changer l'image et les textes) ...
+        document.getElementById('modal-photo').src = card.style.backgroundImage.slice(5, -2).replace(/"/g, "");
+        document.getElementById('detail-photo-id').textContent = card.dataset.photoId;
+        document.getElementById('detail-date').textContent = card.dataset.date;
+        document.getElementById('detail-battery').textContent = card.dataset.battery + "%";
+        document.getElementById('detail-resolution').textContent = card.dataset.resolution;
+
+        // SÉCURITÉ : On ferme le panneau de détails à chaque changement de photo
+        const panel = document.getElementById('detail-panel');
+        panel.classList.remove('open');
+        document.getElementById('detail-arrow').style.transform = "rotate(0deg)";
+
+        document.getElementById('photo-viewer-modal').setAttribute('data-current-id', photoId);
+    }
+
+    // Fermer le modal en cliquant à côté
+    document.getElementById('photo-viewer-modal').addEventListener('click', function(e) {
+        if (e.target === this) {
+            this.style.display = 'none';
+            document.body.style.overflow = 'auto';
+        }
+    });
+
+    // -------------------------
+    // Fermer en cliquant dehors
+    // -------------------------
+    document.addEventListener("DOMContentLoaded", () => {
+        // Fermeture du drawer Album
+        const drawerAlbum = document.getElementById("drawer-album");
+        if (drawerAlbum) {
+            drawerAlbum.addEventListener("click", (e) => {
+                if (e.target === drawerAlbum) closeFormAlbum();
+            });
+        }
+
+        // Fermeture du drawer Edit
+        const drawerEdit = document.getElementById("drawer-edit");
+        if (drawerEdit) {
+            drawerEdit.addEventListener("click", (e) => {
+                if (e.target === drawerEdit) closeEditDrawer();
+            });
+        }
+    });
+</script>
