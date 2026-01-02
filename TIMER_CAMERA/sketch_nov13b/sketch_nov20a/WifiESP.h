@@ -1,6 +1,7 @@
 #include <WiFi.h>
 #include <WebServer.h>
 #include <DNSServer.h>
+#include <Preferences.h>
 
 class WifiESP {
 
@@ -8,10 +9,9 @@ private:
   WebServer server{ 80 };
   const byte DNS_PORT = 53;
   DNSServer dnsServer;
-
-
-
-  // ----- MODE STATION -----
+  Preferences prefs;
+public:
+  WifiESP() {}
   void beginSTA(const char* ssid, const char* password) {
 
     WiFi.softAPdisconnect(true);
@@ -30,8 +30,6 @@ private:
 
       if (retry > 20) {
         Serial.println("\nÉchec de connexion !");
-        beginAP();
-
         return;
       }
     }
@@ -40,13 +38,6 @@ private:
     Serial.print("Adresse IP locale : ");
     Serial.println(WiFi.localIP());
   }
-
-
-public:
-
-  WifiESP() {}
-
-  // ----- MODE AP + SERVEUR WEB -----
   void beginAP() {
     WiFi.mode(WIFI_AP);
     WiFi.softAP("ESP_Config");
@@ -134,9 +125,6 @@ public:
 
     return page;
   }
-
-
-
   // ----- ROUTE "/" -----
   void handleRoot() {
     server.send(200, "text/html", getPageHTML());
@@ -153,6 +141,8 @@ public:
       Serial.println("SSID     : " + ssid);
       Serial.println("Password : " + password);
 
+
+
       // Page temporaire
       server.send(200, "text/html",
                   "<html><body style='font-family:Arial;text-align:center;'>"
@@ -161,15 +151,46 @@ public:
                   "</body></html>");
 
       delay(300);
+      saveWifi(ssid, password);
 
-      // Tentative de connexion
       beginSTA(ssid.c_str(), password.c_str());
       Serial.println("AP désactivé, fonctionnement uniquement en station.");
     }
   }
-
-  // ----- À METTRE DANS LOOP() -----
+  void saveWifi(String ssid, String password) {
+    prefs.begin("wifi", false);
+    prefs.putString("ssid", ssid);
+    prefs.putString("pass", password);
+    prefs.end();
+  }
   void handleClient() {
     server.handleClient();
+  }
+  bool isConfigured() {
+    prefs.begin("wifi", true);
+
+    if (!prefs.isKey("ssid") || !prefs.isKey("pass")) {
+      prefs.end();
+      return false;
+    }
+
+    String ssid = prefs.getString("ssid");
+    String password = prefs.getString("pass");
+
+    prefs.end();
+    beginSTA(ssid.c_str(), password.c_str());
+
+    unsigned long startAttemptTime = millis();
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+      delay(100);
+    }
+    return (WiFi.status() == WL_CONNECTED);
+  }
+  void clearWifiPreferences() {
+    Serial.println("Effacement des identifiants WiFi...");
+    prefs.begin("wifi", false);
+    prefs.clear();  // Efface toutes les clés dans l'espace "wifi"
+    prefs.end();
+    Serial.println("Mémoire WiFi effacée !");
   }
 };

@@ -9,6 +9,15 @@
     <link rel="stylesheet" href="~/WebApplication1.styles.css" asp-append-version="true" />
 </head>
 <body>
+    @if (ViewBag.Battery != null )
+    {
+        if (ViewBag.Battery <= 20)
+        {
+            <div class="alert alert-warning" role="alert">
+                Le niveau de batterie de vos appareils devient critique
+            </div>
+        }
+    }
     <div class="container">
         <main role="main" class="pb-3">
             @RenderBody()

@@ -37,6 +37,10 @@ namespace WebApplication1.Controllers
                 Albums = _context.Albums.ToList()
             };
 
+            ViewBag.Battery = viewModel.DernieresCaptures
+                 .OrderByDescending(c => c.date_capture)
+                 .FirstOrDefault()?.batterie;
+
             return View(viewModel);
         }
         public IActionResult Privacy()
@@ -71,7 +75,6 @@ namespace WebApplication1.Controllers
 
                 
             };
-
 
             return View(viewModel);
         }
@@ -110,8 +113,7 @@ namespace WebApplication1.Controllers
             ViewBag.FilterDate = date?.ToString("yyyy-MM-dd");
             ViewBag.FilterStart = start?.ToString("yyyy-MM-dd");
             ViewBag.FilterEnd = end?.ToString("yyyy-MM-dd");
-
-            return View(viewModel);
+            return View("Phototheque", viewModel);
         }
         [HttpPost]
         public IActionResult ToggleFavorite(int id) 
@@ -248,6 +250,8 @@ namespace WebApplication1.Controllers
             _context.Albums.Add(album);
             _context.SaveChanges();
 
+
+
             return RedirectToAction(nameof(Index));
         }
         [HttpPost]
@@ -316,6 +320,7 @@ namespace WebApplication1.Controllers
         {
             ViewBag.Nom = "Favoris";
 
+
             var viewModel = new HomeViewModel
             {
                 // 5 dernières photos
@@ -328,7 +333,6 @@ namespace WebApplication1.Controllers
 
 
             };
-
 
             return View("PhotosParAlbum", viewModel);
         }

@@ -6,7 +6,6 @@ struct ImageData {
   size_t size = 0;            // Taille de l'image (TimerCAM.Camera.fb->len)
 };
 
-
 class EspCamera {
 public:
   EspCamera() {}
@@ -26,8 +25,6 @@ public:
 
     set3MP();
   }
-
-
   // 2 MP (1600x1200)
   void set2MP() {
     sensor_t* s = TimerCAM.Camera.sensor;
@@ -61,7 +58,6 @@ public:
   ImageData TakePicture() {
     ImageData data;
 
-    // 1. Capture de l'image
     if (TimerCAM.Camera.get()) {
       data.size = TimerCAM.Camera.fb->len;
       data.buffer = TimerCAM.Camera.fb->buf;
@@ -72,8 +68,8 @@ public:
     }
     return data;
   }
-  int GetBatteryLevel() {
-    int battery = TimerCAM.Power.getBatteryLevel();
+  uint8_t GetBatteryLevel() {
+    uint8_t battery = TimerCAM.Power.getBatteryLevel();
     Serial.printf("Bat Voltage: %dmv\r\n", TimerCAM.Power.getBatteryVoltage());
     Serial.printf("Bat Level: %d%%\r\n", TimerCAM.Power.getBatteryLevel());
 
