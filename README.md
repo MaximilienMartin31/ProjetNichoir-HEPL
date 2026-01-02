@@ -1,4 +1,4 @@
-# 🦉 Projet Nichoir Connecté - ESP32 TimerCAM & Raspberry Pi
+# Projet Nichoir Connecté - ESP32 TimerCAM & Raspberry Pi
 
 Ce dépôt contient l’ensemble des ressources matérielles et logicielles pour la réalisation d’un nichoir intelligent. Le système détecte la présence d'un oiseau, capture une image et la transmet via MQTT à un serveur central pour consultation web.
 
