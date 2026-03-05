@@ -30,6 +30,7 @@ public:
 
       if (retry > 20) {
         Serial.println("\nÉchec de connexion !");
+        beginAP ();
         return;
       }
     }
@@ -181,7 +182,7 @@ public:
     beginSTA(ssid.c_str(), password.c_str());
 
     unsigned long startAttemptTime = millis();
-    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 10000) {
+    while (WiFi.status() != WL_CONNECTED && millis() - startAttemptTime < 1000) {
       delay(100);
     }
     return (WiFi.status() == WL_CONNECTED);
@@ -189,7 +190,7 @@ public:
   void clearWifiPreferences() {
     Serial.println("Effacement des identifiants WiFi...");
     prefs.begin("wifi", false);
-    prefs.clear();  // Efface toutes les clés dans l'espace "wifi"
+    prefs.clear(); 
     prefs.end();
     Serial.println("Mémoire WiFi effacée !");
   }
